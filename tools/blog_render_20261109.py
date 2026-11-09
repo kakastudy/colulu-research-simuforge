@@ -24,7 +24,7 @@ h2:first-of-type{border-top:0;padding-top:0}
 h3{font-size:19px;margin:34px 0 10px}
 h4{font-size:16.5px;margin:26px 0 8px;color:#334155}
 p{margin:14px 0}
-a{color:var(--accent)}
+a{color:var(--accent);text-decoration:underline;text-underline-offset:2px;word-break:break-all}
 strong{font-weight:700}
 blockquote{margin:22px 0;padding:18px 22px;background:#f8fafc;border-left:3px solid var(--accent);
  border-radius:0 8px 8px 0;color:#334155;font-size:15.5px}

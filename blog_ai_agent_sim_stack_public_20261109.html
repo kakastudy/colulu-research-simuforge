@@ -15,7 +15,7 @@ h2:first-of-type{border-top:0;padding-top:0}
 h3{font-size:19px;margin:34px 0 10px}
 h4{font-size:16.5px;margin:26px 0 8px;color:#334155}
 p{margin:14px 0}
-a{color:var(--accent)}
+a{color:var(--accent);text-decoration:underline;text-underline-offset:2px;word-break:break-all}
 strong{font-weight:700}
 blockquote{margin:22px 0;padding:18px 22px;background:#f8fafc;border-left:3px solid var(--accent);
  border-radius:0 8px 8px 0;color:#334155;font-size:15.5px}
@@ -247,6 +247,14 @@ li{margin:7px 0}
 <p><em>图 1 · 单罐装置级边界：左侧六路补料与公用工程，中部 33 维状态的反应器本体，右侧在线/离线观测与批次末收获。右下角三档时间尺度说明了这套问题的难点——快变量靠 0.2 h 在线通道，慢变量靠 12 h 化验，而目标量（比生长速率、比产物速率）只能由两者联合反推。</em></p>
 <p><img alt="图 2 三层结构：平台层、求解器层、算子层与确定性底座" src="docs/blog/assets/fig2_arch.png" /></p>
 <p><em>图 2 · 系统分层。上层调用下层，下层向上层暴露能力；底座是先研发、后冻结的确定性资产——33 维方程、105 个参数、26 维输入、100 批基准、逐位可复现。分层的目的不是好看，而是把"迁移时改什么"限定在两族之内。</em></p>
+<p><strong>代码与数据在哪里。</strong></p>
+<p>本文讲的所有实现——33 维求解器、58 个底层算子与 18 个高层能力、两代仿真计算平台，以及 100 个批次的加工数据——都已整理成一个可直接运行的仓库：</p>
+<blockquote>
+<p><strong><a href="https://github.com/kakastudy/colulu-research-simuforge">https://github.com/kakastudy/colulu-research-simuforge</a></strong></p>
+</blockquote>
+<p>仓库按本文的三层结构组织：<code>candidate/</code> 是求解器，<code>operator_kit/</code> 是算子层（<code>penops</code>，既可 <code>import</code> 也可作为 MCP 服务装载），<code>platform/</code> 与 <code>platform_v2/</code> 是两代平台，<code>data/processed/</code> 是加工后的基准数据，<code>tools/</code> 是研发与验收脚本。<code>requirements.txt</code> 锁定了依赖版本（<code>numpy&lt;2</code> 是硬约束，原因写在文件注释里），<code>README.md</code> 写了每层的一句话入口与五条复现边界。</p>
+<p>三条命令可以走完全流程：跑一次单批仿真、跑一遍算子包自检、起平台并提交一次真实作业。文中每一个数字都能沿这三条命令重算出来——这也是我把它公开的原因：<strong>可复现性不该靠读者的信任，而该靠一个能跑起来的东西。</strong></p>
+<p>有一处需要提前说明：<strong>仓库里不含 MATLAB 原始参考实现。</strong> 那份代码是第三方研究成果，不该由本文转载；但它才是口径的来源，所以仓库只保留加工后的 100 批 CSV，数据来源、加工口径与引用方式写在 README 里。</p>
 <hr />
 <h2>二、仿真算子：把工艺知识拆成可单测的最小单元</h2>
 <h3>2.1 研发过程</h3>
