@@ -1,0 +1,2250 @@
+{
+  "source": "derived from runs/ and docs/ by paper/make_extended_stats.py",
+  "baseline_ladder": {
+    "note": "Naive predictors forecast the recorded yield series; L0 reconstructs yield from process inputs with per-batch calibrated parameters. The information sets differ, so the comparison quantifies the difficulty of the target series, not a like-for-like method ranking.",
+    "median_recorded_yield_g": 3237948.9,
+    "recorded_yield_range_g": [
+      535411.9,
+      4556491.7
+    ],
+    "rows": [
+      {
+        "name": "L0 frozen mechanistic reconstruction",
+        "information_set": "batch inputs + per-batch calibrated COMBINED parameters + 33-state ODE",
+        "n": 86,
+        "rmse_pct": 2.3448,
+        "rmse_pct_of_median_yield": 2.2205,
+        "median_abs_pct": 1.4916,
+        "within5": 86,
+        "min_pct": -4.814,
+        "max_pct": 4.829
+      },
+      {
+        "name": "Leave-one-out batch-mean predictor",
+        "information_set": "other 85 recorded yields only; held-out batch excluded",
+        "n": 86,
+        "rmse_pct": 73.6679,
+        "rmse_pct_of_median_yield": 26.3103,
+        "median_abs_pct": 15.9913,
+        "within5": 11,
+        "min_pct": -34.599,
+        "max_pct": 465.412
+      },
+      {
+        "name": "In-sample global-mean predictor",
+        "information_set": "all 86 recorded yields (optimistic upper bound for a constant)",
+        "n": 86,
+        "rmse_pct": 72.8113,
+        "rmse_pct_of_median_yield": 26.0044,
+        "median_abs_pct": 15.8053,
+        "within5": 11,
+        "min_pct": -34.197,
+        "max_pct": 460.0
+      },
+      {
+        "name": "Persistence (previous batch)",
+        "information_set": "recorded yield of the immediately preceding batch",
+        "n": 85,
+        "rmse_pct": 92.3806,
+        "rmse_pct_of_median_yield": 38.262,
+        "median_abs_pct": 22.8655,
+        "within5": 14,
+        "min_pct": -75.829,
+        "max_pct": 564.196
+      },
+      {
+        "name": "Zero predictor",
+        "information_set": "none (constant zero)",
+        "n": 86,
+        "rmse_pct": 100.0,
+        "rmse_pct_of_median_yield": 96.1811,
+        "median_abs_pct": 100.0,
+        "within5": 0,
+        "min_pct": -100.0,
+        "max_pct": -100.0
+      }
+    ],
+    "error_reduction_vs_loo_pct": 96.82,
+    "error_reduction_vs_persistence_pct": 97.46,
+    "error_reduction_vs_zero_pct": 97.66,
+    "low_yield_note": "relative error is unstable for the two lowest-yield batches (0.54-0.74 x 10^6 g vs a median of 3.24 x 10^6 g); the median-normalised column is reported alongside it"
+  },
+  "error_distribution": {
+    "n": 86,
+    "mean_pct": -0.0662,
+    "sd_pct": 2.3576,
+    "median_pct": -0.0744,
+    "mad_pct": 1.4967,
+    "q1_pct": -1.6508,
+    "q3_pct": 1.3526,
+    "iqr_pct": 3.0034,
+    "min_pct": -4.8144,
+    "max_pct": 4.829,
+    "skewness": 0.096,
+    "excess_kurtosis": -0.4767,
+    "shapiro_W": 0.9793,
+    "shapiro_p": 0.182378,
+    "ks_normal_p": 0.734751,
+    "n_positive": 40,
+    "n_negative": 46,
+    "sign_test_p": 0.590036,
+    "lag1_autocorr": 0.0579,
+    "runs": 42,
+    "runs_expected": 43.791,
+    "runs_z": -0.3904,
+    "runs_p": 0.696236,
+    "wilson95_within5": [
+      0.95724,
+      1.0
+    ],
+    "normal_type_n": 84,
+    "fault_type_n": 2,
+    "normal_rmse_pct": 2.3365,
+    "fault_rmse_pct": 2.6696,
+    "mannwhitney_U": 26.0,
+    "mannwhitney_p": 0.10725,
+    "mannwhitney_note": "only 2 fault batches; the test is reported for completeness and is severely underpowered"
+  },
+  "parity": {
+    "recorded_yield_g": [
+      3395719.0,
+      3588382.1,
+      2728547.6,
+      2812197.8,
+      3882375.3,
+      4016825.9,
+      1088357.3,
+      3543216.6,
+      3362656.6,
+      3309056.7,
+      2797385.8,
+      3652434.0,
+      2944229.5,
+      1419258.0,
+      3413878.6,
+      3805757.9,
+      4359532.9,
+      2154774.1,
+      3605398.9,
+      3038239.3,
+      2412298.1,
+      4556491.7,
+      1377965.8,
+      4396439.4,
+      2122011.5,
+      1885502.5,
+      3091429.7,
+      1824915.3,
+      2365885.8,
+      2871770.0,
+      3609042.2,
+      2146065.4,
+      3382663.9,
+      1625762.7,
+      1726356.3,
+      1019372.3,
+      3511517.2,
+      2421674.8,
+      4273552.7,
+      2333311.4,
+      3171866.6,
+      1261727.3,
+      2678088.5,
+      3179634.9,
+      2482311.4,
+      3213988.3,
+      3140468.9,
+      3844069.2,
+      3094136.8,
+      2024989.3,
+      2378482.2,
+      3516283.7,
+      3695127.3,
+      3399949.4,
+      3531077.0,
+      3861576.4,
+      3119423.5,
+      2341916.8,
+      3508286.5,
+      3433302.2,
+      3219147.5,
+      3664286.4,
+      3642559.7,
+      3500262.6,
+      3744536.1,
+      2882155.9,
+      3548082.6,
+      2981339.0,
+      3131019.3,
+      3736069.8,
+      3395400.1,
+      3457686.1,
+      3292006.1,
+      3276513.0,
+      3302746.5,
+      3566153.9,
+      3488823.8,
+      3256750.2,
+      3045040.5,
+      3556182.2,
+      535411.9,
+      2215114.5,
+      3550518.4,
+      773329.1,
+      2630989.1,
+      3713449.8
+    ],
+    "simulated_yield_g": [
+      3379878.6,
+      3684940.4,
+      2803195.4,
+      2678264.0,
+      3884041.9,
+      3854588.1,
+      1059036.3,
+      3589527.3,
+      3510683.4,
+      3301327.1,
+      2790495.0,
+      3602957.1,
+      2896300.5,
+      1426893.7,
+      3452626.2,
+      3800140.1,
+      4424997.6,
+      2217394.2,
+      3653391.3,
+      3183163.4,
+      2485410.7,
+      4400381.2,
+      1389862.0,
+      4405786.0,
+      2115103.1,
+      1851359.2,
+      3040160.5,
+      1823708.8,
+      2311726.6,
+      2859555.0,
+      3636632.7,
+      2207778.2,
+      3379868.9,
+      1633215.2,
+      1655175.4,
+      1008947.2,
+      3477297.9,
+      2423043.7,
+      4331905.5,
+      2273845.9,
+      3163670.4,
+      1261301.5,
+      2573224.1,
+      3090600.7,
+      2392786.2,
+      3190658.6,
+      3146582.3,
+      3763704.8,
+      2945173.4,
+      2122775.1,
+      2372940.8,
+      3597057.7,
+      3658705.1,
+      3469758.4,
+      3398420.0,
+      3868875.4,
+      3182337.2,
+      2350912.0,
+      3656400.0,
+      3334754.7,
+      3360883.2,
+      3554004.3,
+      3639165.2,
+      3537662.6,
+      3730454.9,
+      2872717.3,
+      3421904.4,
+      2922709.5,
+      3050028.5,
+      3711527.9,
+      3315086.3,
+      3561095.6,
+      3448617.4,
+      3246619.9,
+      3343627.3,
+      3513319.8,
+      3493530.6,
+      3256721.2,
+      3093390.5,
+      3664974.0,
+      554269.3,
+      2245234.0,
+      3615602.2,
+      773823.8,
+      2540008.5,
+      3725548.2
+    ],
+    "mean_yield_g": [
+      3387798.8,
+      3636661.2,
+      2765871.5,
+      2745230.9,
+      3883208.6,
+      3935707.0,
+      1073696.8,
+      3566372.0,
+      3436670.0,
+      3305191.9,
+      2793940.4,
+      3627695.5,
+      2920265.0,
+      1423075.9,
+      3433252.4,
+      3802949.0,
+      4392265.3,
+      2186084.1,
+      3629395.1,
+      3110701.4,
+      2448854.4,
+      4478436.4,
+      1383913.9,
+      4401112.7,
+      2118557.3,
+      1868430.9,
+      3065795.1,
+      1824312.0,
+      2338806.2,
+      2865662.5,
+      3622837.4,
+      2176921.8,
+      3381266.4,
+      1629489.0,
+      1690765.8,
+      1014159.7,
+      3494407.6,
+      2422359.2,
+      4302729.1,
+      2303578.6,
+      3167768.5,
+      1261514.4,
+      2625656.3,
+      3135117.8,
+      2437548.8,
+      3202323.5,
+      3143525.6,
+      3803887.0,
+      3019655.1,
+      2073882.2,
+      2375711.5,
+      3556670.7,
+      3676916.2,
+      3434853.9,
+      3464748.5,
+      3865225.9,
+      3150880.3,
+      2346414.4,
+      3582343.3,
+      3384028.5,
+      3290015.3,
+      3609145.4,
+      3640862.5,
+      3518962.6,
+      3737495.5,
+      2877436.6,
+      3484993.5,
+      2952024.3,
+      3090523.9,
+      3723798.8,
+      3355243.2,
+      3509390.9,
+      3370311.8,
+      3261566.4,
+      3323186.9,
+      3539736.9,
+      3491177.2,
+      3256735.7,
+      3069215.5,
+      3610578.1,
+      544840.6,
+      2230174.3,
+      3583060.3,
+      773576.5,
+      2585498.8,
+      3719499.0
+    ],
+    "difference_pct": [
+      -0.4665,
+      2.6909,
+      2.7358,
+      -4.7626,
+      0.0429,
+      -4.039,
+      -2.6941,
+      1.307,
+      4.4021,
+      -0.2336,
+      -0.2463,
+      -1.3546,
+      -1.6279,
+      0.538,
+      1.135,
+      -0.1476,
+      1.5016,
+      2.9061,
+      1.3311,
+      4.77,
+      3.0308,
+      -3.4261,
+      0.8633,
+      0.2126,
+      -0.3256,
+      -1.8108,
+      -1.6584,
+      -0.0661,
+      -2.2892,
+      -0.4253,
+      0.7645,
+      2.8756,
+      -0.0826,
+      0.4584,
+      -4.1232,
+      -1.0227,
+      -0.9745,
+      0.0565,
+      1.3654,
+      -2.5485,
+      -0.2584,
+      -0.0338,
+      -3.9156,
+      -2.8001,
+      -3.6065,
+      -0.7259,
+      0.1947,
+      -2.0906,
+      -4.8144,
+      4.829,
+      -0.233,
+      2.2971,
+      -0.9857,
+      2.0532,
+      -3.7568,
+      0.189,
+      2.0168,
+      0.3841,
+      4.2218,
+      -2.8703,
+      4.4029,
+      -3.0096,
+      -0.0932,
+      1.0685,
+      -0.376,
+      -0.3275,
+      -3.5562,
+      -1.9665,
+      -2.5867,
+      -0.6569,
+      -2.3654,
+      2.9907,
+      4.7573,
+      -0.9123,
+      1.2378,
+      -1.4815,
+      0.1349,
+      -0.0009,
+      1.5878,
+      3.0592,
+      3.522,
+      1.3597,
+      1.8331,
+      0.064,
+      -3.458,
+      0.3258
+    ],
+    "ba_mean_pct": -0.0662,
+    "ba_sd_pct": 2.3576,
+    "ba_lo_pct": -4.6871,
+    "ba_hi_pct": 4.5547,
+    "pearson_r": 0.996367,
+    "r2": 0.992747
+  },
+  "falsifiability_certificates": {
+    "schema": [
+      "control_separation",
+      "output_degeneracy",
+      "detection_power",
+      "verdict"
+    ],
+    "definitions": {
+      "control_separation": "min(1, |M(fitted) - M(zero-information)|) for scalar statistics; 1 - |2p-1| for binary detector trigger rates; fraction of injected defects detected for loading tests",
+      "output_degeneracy": "normalised Shannon entropy of the instrument output distribution; 0 for a constant output",
+      "detection_power": "Youden J where a confusion table exists; fraction of injected defects detected for loading tests"
+    },
+    "rows": [
+      {
+        "id": "M1",
+        "instrument": "Residual-quantile interval coverage",
+        "control_separation": 0.0,
+        "output_degeneracy": 0.0,
+        "detection_power": 0.0,
+        "verdict": "TAUTOLOGICAL",
+        "detail": "coverage 0.899548532731377 identical for fitted and zero-information predictors across X, P, PAA and viscosity",
+        "evidence": "runs/r160_i3_coverage_tautology.json"
+      },
+      {
+        "id": "M2",
+        "instrument": "Legacy classify_crash",
+        "control_separation": 0.0,
+        "output_degeneracy": 0.0,
+        "detection_power": 0.0,
+        "verdict": "CONSTANT",
+        "detail": "86/86 normal; first guard clause can never be false",
+        "evidence": "runs/r156_acceptance.json"
+      },
+      {
+        "id": "M3",
+        "instrument": "Global innovation threshold (z > 5)",
+        "control_separation": 0.3125,
+        "output_degeneracy": 0.6253,
+        "detection_power": 0.0,
+        "verdict": "SATURATED",
+        "detail": "27/32 = 84.38% of unperturbed batches flagged degraded",
+        "evidence": "runs/r163_degradation_probe.json"
+      },
+      {
+        "id": "M4",
+        "instrument": "Five-channel classify_health",
+        "control_separation": 0.2093,
+        "output_degeneracy": 0.3705,
+        "detection_power": 1.0,
+        "verdict": "CERTIFIED",
+        "detail": "77 normal / 5 degraded / 4 catastrophic; all 9 flagged batches carry documented pH-guard or product-collapse evidence",
+        "evidence": "runs/r156_acceptance.json"
+      },
+      {
+        "id": "M5",
+        "instrument": "Channel-wise LOO-calibrated innovation (V1)",
+        "control_separation": 1.0,
+        "output_degeneracy": 0.9,
+        "detection_power": 0.4667,
+        "verdict": "CERTIFIED (opt-in)",
+        "detail": "TP10 / FN5 / TN4 / FP1; Youden J = 0.4667; 0/20 controls triggered",
+        "evidence": "runs/r166_ab_gate.json"
+      },
+      {
+        "id": "M6",
+        "instrument": "mu +/- 1.96 sigma interval coverage",
+        "control_separation": 0.1072,
+        "output_degeneracy": 1.0,
+        "detection_power": 0.1072,
+        "verdict": "CERTIFIED (width only)",
+        "detail": "junk coverage 0.0000 vs fitted 0.1072 (X) / 0.3160 (P); coverage withdrawn as calibration evidence, half-width retained",
+        "evidence": "runs/r160_i3_coverage_tautology.json"
+      },
+      {
+        "id": "M7",
+        "instrument": "File-existence loading test",
+        "control_separation": 0.0,
+        "output_degeneracy": 0.0,
+        "detection_power": 0.0,
+        "verdict": "TAUTOLOGICAL",
+        "detail": "reports 12/12 loaded for both valid and non-callable symbols",
+        "evidence": "docs/r167_round_report.md"
+      },
+      {
+        "id": "M8",
+        "instrument": "Runtime import + callable loading test",
+        "control_separation": 1.0,
+        "output_degeneracy": 1.0,
+        "detection_power": 1.0,
+        "verdict": "CERTIFIED",
+        "detail": "detects 2/2 naming defects (hier_est -> hier_fit, conservation_metrics -> element_balance); 12/12 verified",
+        "evidence": "runs/r167_platform_gate.json"
+      }
+    ],
+    "n_certified": 4,
+    "n_invalidated": 4,
+    "v1_confusion": {
+      "TP": 10,
+      "FN": 5,
+      "TN": 4,
+      "FP": 1,
+      "TPR": 0.6667,
+      "FPR": 0.2,
+      "Youden_J": 0.4667,
+      "accuracy": 0.7
+    }
+  },
+  "health_validity_crosstab": {
+    "invalid_batches": [
+      37,
+      40,
+      43,
+      49,
+      50,
+      51,
+      54,
+      91,
+      92
+    ],
+    "n_invalid": 9,
+    "cells": [
+      {
+        "health": "catastrophic",
+        "validity": "invalid",
+        "n": 4
+      },
+      {
+        "health": "degraded",
+        "validity": "invalid",
+        "n": 5
+      },
+      {
+        "health": "normal",
+        "validity": "invalid",
+        "n": 0
+      },
+      {
+        "health": "normal",
+        "validity": "valid",
+        "n": 77
+      }
+    ],
+    "binary_table": {
+      "normal_valid": 77,
+      "normal_invalid": 0,
+      "flagged_valid": 0,
+      "flagged_invalid": 9
+    },
+    "phi_coefficient": 1.0,
+    "note": "The two criteria are perfectly collinear on this dataset (phi = 1.0) because both consume the same pH-guard signal. They therefore cannot be counted as independent corroboration. Admissibility for baseline comparison and model failure remain different questions."
+  },
+  "error_by_health": {
+    "normal": [
+      -0.4665,
+      2.6909,
+      2.7358,
+      -4.7626,
+      0.0429,
+      -4.039,
+      -2.6941,
+      1.307,
+      4.4021,
+      -0.2336,
+      -0.2463,
+      -1.3546,
+      -1.6279,
+      0.538,
+      1.135,
+      -0.1476,
+      1.5016,
+      2.9061,
+      1.3311,
+      4.77,
+      3.0308,
+      -3.4261,
+      0.8633,
+      0.2126,
+      -0.3256,
+      -1.8108,
+      -1.6584,
+      -0.0661,
+      -0.4253,
+      0.7645,
+      -0.0826,
+      0.4584,
+      -1.0227,
+      -0.9745,
+      0.0565,
+      1.3654,
+      -3.9156,
+      -2.8001,
+      -0.7259,
+      0.1947,
+      -2.0906,
+      -4.8144,
+      4.829,
+      -0.233,
+      2.2971,
+      -0.9857,
+      2.0532,
+      -3.7568,
+      0.189,
+      2.0168,
+      0.3841,
+      4.2218,
+      -2.8703,
+      4.4029,
+      -3.0096,
+      -0.0932,
+      1.0685,
+      -0.376,
+      -0.3275,
+      -3.5562,
+      -1.9665,
+      -2.5867,
+      -0.6569,
+      -2.3654,
+      2.9907,
+      4.7573,
+      -0.9123,
+      1.2378,
+      -1.4815,
+      0.1349,
+      -0.0009,
+      1.5878,
+      3.0592,
+      1.8331,
+      0.064,
+      -3.458,
+      0.3258
+    ],
+    "catastrophic": [
+      -2.2892,
+      -0.2584,
+      -0.0338,
+      3.522
+    ],
+    "degraded": [
+      2.8756,
+      -4.1232,
+      -2.5485,
+      -3.6065,
+      1.3597
+    ]
+  },
+  "channel_cv": {
+    "X": {
+      "kind": "assay",
+      "n": 86.0,
+      "proxies": [
+        "rc",
+        "ro"
+      ],
+      "nrmse_A_median": 24.5829,
+      "nrmse_A_p90": 35.7985,
+      "nrmse_cv_median": 2.2768,
+      "nrmse_cv_p90": 6.5323,
+      "nrmse_cv_max": 20.1862,
+      "gain_median_pp": 22.3062,
+      "coef": [
+        -0.09986016891314015,
+        0.671468683731418,
+        0.4377092159468515,
+        0.0209564481341823,
+        0.18873429173479975
+      ],
+      "resid_corr": {
+        "rc": 0.01672615726822286,
+        "ro": -0.0825401466378067
+      },
+      "ci_level": 0.9,
+      "ci_lo_pct": -6.7658,
+      "ci_hi_pct": 5.1463,
+      "ci_half_width_pct": 5.9561,
+      "coverage": 0.8995,
+      "verdict": "DELIVERABLE",
+      "gates": {
+        "gain_gt_1pp": true,
+        "ci_half_width_le_max": true,
+        "ci_half_width_lt_A": true
+      }
+    },
+    "P": {
+      "kind": "assay",
+      "n": 86.0,
+      "proxies": [
+        "rc",
+        "ro"
+      ],
+      "nrmse_A_median": 14.1919,
+      "nrmse_A_p90": 23.5668,
+      "nrmse_cv_median": 17.6975,
+      "nrmse_cv_p90": 39.2465,
+      "nrmse_cv_max": 120.5491,
+      "gain_median_pp": -3.5056,
+      "coef": [
+        0.07370594382699487,
+        -0.30771073692578876,
+        0.9829797653695862,
+        0.3624748625321873,
+        0.054719784079274136
+      ],
+      "resid_corr": {
+        "rc": -0.05847261622061066,
+        "ro": -0.05376867796375166
+      },
+      "ci_level": 0.9,
+      "ci_lo_pct": -30.731,
+      "ci_hi_pct": 52.4552,
+      "ci_half_width_pct": 41.5931,
+      "coverage": 0.8995,
+      "verdict": "NOT_IDENTIFIABLE",
+      "gates": {
+        "gain_gt_1pp": false,
+        "ci_half_width_le_max": false,
+        "ci_half_width_lt_A": false
+      }
+    },
+    "PAA": {
+      "kind": "assay",
+      "n": 86.0,
+      "proxies": [
+        "rc",
+        "ro"
+      ],
+      "nrmse_A_median": 28.1973,
+      "nrmse_A_p90": 48.0623,
+      "nrmse_cv_median": 28.7209,
+      "nrmse_cv_p90": 49.918,
+      "nrmse_cv_max": 94.0149,
+      "gain_median_pp": -0.5236,
+      "coef": [
+        -0.04202364456203427,
+        -0.39812982403710384,
+        -0.5983022894090246,
+        -0.21249564264728432,
+        -0.17598780502298184
+      ],
+      "resid_corr": {
+        "rc": 0.04290803505663516,
+        "ro": 0.06152433325218441
+      },
+      "ci_level": 0.9,
+      "ci_lo_pct": -47.6627,
+      "ci_hi_pct": 65.1902,
+      "ci_half_width_pct": 56.4265,
+      "coverage": 0.8995,
+      "verdict": "NOT_IDENTIFIABLE",
+      "gates": {
+        "gain_gt_1pp": false,
+        "ci_half_width_le_max": false,
+        "ci_half_width_lt_A": false
+      }
+    },
+    "vis": {
+      "kind": "assay",
+      "n": 86.0,
+      "proxies": [
+        "rc",
+        "ro"
+      ],
+      "nrmse_A_median": 19.689,
+      "nrmse_A_p90": 23.3388,
+      "nrmse_cv_median": 5.5736,
+      "nrmse_cv_p90": 9.0627,
+      "nrmse_cv_max": 19.9391,
+      "gain_median_pp": 14.1154,
+      "coef": [
+        0.1201901313990906,
+        1.1705939929661953,
+        -0.23839489032383812,
+        -0.10495404931206608,
+        -0.03750721842991867
+      ],
+      "resid_corr": {
+        "rc": 0.004627436966272968,
+        "ro": -0.04259314175963019
+      },
+      "ci_level": 0.9,
+      "ci_lo_pct": -10.7513,
+      "ci_hi_pct": 11.6019,
+      "ci_half_width_pct": 11.1766,
+      "coverage": 0.8995,
+      "verdict": "DELIVERABLE",
+      "gates": {
+        "gain_gt_1pp": true,
+        "ci_half_width_le_max": true,
+        "ci_half_width_lt_A": true
+      }
+    },
+    "S": {
+      "kind": "model_ref",
+      "n": 86.0,
+      "proxies": [
+        "rc",
+        "ro"
+      ],
+      "nrmse_A_median": 268.5645,
+      "nrmse_A_p90": 513.4552,
+      "nrmse_cv_median": 214.5867,
+      "nrmse_cv_p90": 370.4297,
+      "nrmse_cv_max": 415.6722,
+      "gain_median_pp": 53.9778,
+      "coef": [
+        -0.2022627466019085,
+        -3.494905196387763,
+        -1.9311194241848066,
+        0.2571686842101375,
+        -0.32939788676565995
+      ],
+      "resid_corr": {
+        "rc": 0.06475332662657632,
+        "ro": 0.17895987453309004
+      },
+      "ci_level": 0.9,
+      "ci_lo_pct": -165.242,
+      "ci_hi_pct": 40.6285,
+      "ci_half_width_pct": 102.9352,
+      "coverage": 0.9,
+      "verdict": "MARGINAL",
+      "gates": {
+        "gain_gt_1pp": true,
+        "ci_half_width_le_max": false,
+        "ci_half_width_lt_A": true
+      }
+    },
+    "DO2": {
+      "kind": "model_ref",
+      "n": 86.0,
+      "proxies": [
+        "rc",
+        "ro"
+      ],
+      "nrmse_A_median": 19.5268,
+      "nrmse_A_p90": 26.5744,
+      "nrmse_cv_median": 11.8344,
+      "nrmse_cv_p90": 19.3096,
+      "nrmse_cv_max": 27.9483,
+      "gain_median_pp": 7.6924,
+      "coef": [
+        0.09176850655801526,
+        -0.9362363270210694,
+        -0.6238074191662417,
+        -0.1431255766611017,
+        -0.3076824409492253
+      ],
+      "resid_corr": {
+        "rc": 0.23908020578782024,
+        "ro": 0.019586612882579908
+      },
+      "ci_level": 0.9,
+      "ci_lo_pct": -17.1479,
+      "ci_hi_pct": 24.9372,
+      "ci_half_width_pct": 21.0426,
+      "coverage": 0.9,
+      "verdict": "MARGINAL",
+      "gates": {
+        "gain_gt_1pp": true,
+        "ci_half_width_le_max": true,
+        "ci_half_width_lt_A": false
+      }
+    }
+  },
+  "kla_grid": {
+    "batches": [
+      8,
+      11,
+      16,
+      22,
+      23,
+      27,
+      36,
+      55,
+      60,
+      80,
+      91,
+      92
+    ],
+    "alpha_kla": [
+      30.0,
+      40.0,
+      50.0,
+      60.0,
+      70.0,
+      80.0,
+      90.0,
+      100.0,
+      110.0,
+      120.0,
+      130.0,
+      140.0
+    ],
+    "yield_err_pct": [
+      [
+        -99.997,
+        -88.126,
+        -57.906,
+        -4.402,
+        -4.053,
+        -4.04,
+        -4.039,
+        -4.039,
+        -4.039,
+        -4.039,
+        -4.039,
+        -4.039
+      ],
+      [
+        -100.0,
+        -84.579,
+        -49.27,
+        1.117,
+        1.299,
+        1.306,
+        1.307,
+        1.308,
+        1.307,
+        1.307,
+        1.307,
+        1.307
+      ],
+      [
+        -99.433,
+        -90.461,
+        -65.934,
+        -2.544,
+        -1.384,
+        -1.347,
+        -1.344,
+        -1.344,
+        -1.343,
+        -1.344,
+        -1.344,
+        -1.344
+      ],
+      [
+        -100.0,
+        -99.998,
+        -87.85,
+        -3.398,
+        -0.178,
+        -0.149,
+        -0.147,
+        -0.147,
+        -0.147,
+        -0.147,
+        -0.147,
+        -0.147
+      ],
+      [
+        -99.989,
+        -82.481,
+        -5.959,
+        1.425,
+        1.498,
+        1.501,
+        1.502,
+        1.502,
+        1.502,
+        1.502,
+        1.502,
+        1.502
+      ],
+      [
+        -97.21,
+        -84.399,
+        -74.706,
+        -24.891,
+        4.73,
+        4.768,
+        4.771,
+        4.771,
+        4.771,
+        4.771,
+        4.771,
+        4.771
+      ],
+      [
+        -10.927,
+        -0.108,
+        -0.067,
+        -0.066,
+        -0.066,
+        -0.066,
+        -0.066,
+        -0.066,
+        -0.066,
+        -0.066,
+        -0.066,
+        -0.066
+      ],
+      [
+        -99.983,
+        -97.404,
+        -76.277,
+        -62.686,
+        -53.702,
+        -39.523,
+        34.357,
+        34.508,
+        34.51,
+        34.51,
+        34.51,
+        34.51
+      ],
+      [
+        -99.996,
+        -97.754,
+        -87.075,
+        -77.042,
+        -60.341,
+        -2.917,
+        0.468,
+        0.741,
+        0.777,
+        0.783,
+        0.784,
+        0.785
+      ],
+      [
+        -99.205,
+        -83.988,
+        -39.412,
+        -2.485,
+        -2.373,
+        -2.366,
+        -2.365,
+        -2.366,
+        -2.366,
+        -2.365,
+        -2.365,
+        -2.366
+      ],
+      [
+        -99.089,
+        -45.618,
+        -30.429,
+        -30.19,
+        -30.183,
+        -30.303,
+        3.522,
+        -30.282,
+        -30.274,
+        -30.188,
+        -30.164,
+        -30.211
+      ],
+      [
+        -99.884,
+        -80.493,
+        -60.707,
+        -58.703,
+        -6.256,
+        1.166,
+        1.308,
+        1.363,
+        1.362,
+        1.387,
+        1.36,
+        4.042
+      ]
+    ],
+    "kstar": {
+      "n_all": 12.0,
+      "n_interior": 11.0,
+      "mean_all": 83.3056,
+      "std_all": 19.7857,
+      "mean_interior": 78.1516,
+      "std_interior": 8.9429,
+      "range_interior": 28.6824,
+      "rel_dev_vs_nominal_sigma10": 0.1057
+    },
+    "n_filled": 144
+  },
+  "injection": {
+    "batches": [
+      8,
+      11,
+      16,
+      22,
+      23,
+      27
+    ],
+    "scales": [
+      0.02,
+      0.05,
+      0.1,
+      0.2,
+      0.35,
+      0.6,
+      1.0
+    ],
+    "delta_pp": [
+      [
+        -0.0289,
+        -0.014,
+        -0.1085,
+        -0.0613,
+        -0.1233,
+        0.1915
+      ],
+      [
+        -0.0763,
+        -0.0257,
+        -0.2914,
+        -0.1603,
+        -0.3139,
+        0.4149
+      ],
+      [
+        -0.1691,
+        -0.0209,
+        -0.6567,
+        -0.3488,
+        -0.6484,
+        0.6811
+      ],
+      [
+        -0.4323,
+        0.0629,
+        -1.5354,
+        -0.8335,
+        -1.3992,
+        1.0087
+      ],
+      [
+        -0.6884,
+        0.3473,
+        -3.6971,
+        -1.9457,
+        -2.8574,
+        1.0311
+      ],
+      [
+        0.2912,
+        1.3246,
+        -96.2054,
+        -6.8613,
+        -7.6658,
+        -3.4818
+      ],
+      [
+        0.4228,
+        -2.306,
+        -95.6366,
+        -44.4588,
+        -16.9618,
+        -96.0588
+      ]
+    ],
+    "chosen_scale": 0.35,
+    "reference_pp": 3.087858,
+    "caps": {
+      "V2-3": 20.0,
+      "V2-4": 30.0
+    },
+    "tuning_seed": 7,
+    "seed_transfer": [
+      {
+        "seed": 11,
+        "max_abs_delta_pp": 99.8524,
+        "rms_delta_pp": 52.2945,
+        "n_collapse": 2,
+        "feasible": false,
+        "rows": [
+          {
+            "batch": 8,
+            "delta_pp": 1.5058
+          },
+          {
+            "batch": 11,
+            "delta_pp": 1.1111
+          },
+          {
+            "batch": 16,
+            "delta_pp": -7.4173
+          },
+          {
+            "batch": 22,
+            "delta_pp": -99.8524
+          },
+          {
+            "batch": 23,
+            "delta_pp": 1.5388
+          },
+          {
+            "batch": 27,
+            "delta_pp": -79.8554
+          }
+        ]
+      },
+      {
+        "seed": 23,
+        "max_abs_delta_pp": 2.1284,
+        "rms_delta_pp": 1.1979,
+        "n_collapse": 0,
+        "feasible": true,
+        "rows": [
+          {
+            "batch": 8,
+            "delta_pp": 0.4926
+          },
+          {
+            "batch": 11,
+            "delta_pp": 1.5058
+          },
+          {
+            "batch": 16,
+            "delta_pp": -0.4699
+          },
+          {
+            "batch": 22,
+            "delta_pp": 0.5375
+          },
+          {
+            "batch": 23,
+            "delta_pp": -1.0294
+          },
+          {
+            "batch": 27,
+            "delta_pp": 2.1284
+          }
+        ]
+      }
+    ],
+    "loo": [
+      {
+        "hold": 8,
+        "chosen_scale": 0.35,
+        "n_feasible": 5
+      },
+      {
+        "hold": 11,
+        "chosen_scale": 0.35,
+        "n_feasible": 5
+      },
+      {
+        "hold": 16,
+        "chosen_scale": 0.35,
+        "n_feasible": 6
+      },
+      {
+        "hold": 22,
+        "chosen_scale": 0.35,
+        "n_feasible": 5
+      },
+      {
+        "hold": 23,
+        "chosen_scale": 0.35,
+        "n_feasible": 5
+      },
+      {
+        "hold": 27,
+        "chosen_scale": 0.35,
+        "n_feasible": 5
+      }
+    ],
+    "verdict": "NO_GO"
+  },
+  "bistability": {
+    "batches": [
+      3,
+      55,
+      59,
+      60
+    ],
+    "scales": [
+      0.6,
+      0.7,
+      0.8,
+      0.85,
+      0.9,
+      0.95,
+      1.0,
+      1.05,
+      1.1,
+      1.2
+    ],
+    "yield_err_pct": [
+      [
+        -99.944,
+        -98.554,
+        -70.774,
+        -4.511,
+        1.928,
+        4.83,
+        2.736,
+        4.859,
+        5.629,
+        14.059
+      ],
+      [
+        -97.692,
+        -96.716,
+        -91.49,
+        -44.025,
+        -32.47,
+        -1.695,
+        -0.726,
+        5.423,
+        3.502,
+        23.48
+      ],
+      [
+        -99.375,
+        -99.026,
+        -80.978,
+        -72.494,
+        -33.394,
+        -27.446,
+        4.829,
+        13.668,
+        44.507,
+        47.656
+      ],
+      [
+        -94.26,
+        -90.889,
+        -80.867,
+        -71.3,
+        -58.571,
+        -11.163,
+        -0.233,
+        14.026,
+        33.618,
+        60.603
+      ]
+    ]
+  },
+  "fallback_census": {
+    "n_batches": 13,
+    "n_credible": 12,
+    "c_error_pct": [
+      7.352,
+      3.578,
+      -1.433,
+      -1.939,
+      -1.63,
+      7.023,
+      -8.556,
+      -10.182,
+      -7.134,
+      1.088,
+      -8.831,
+      -20.105,
+      0.62
+    ],
+    "x_rel_diff_pct": [
+      -51.692,
+      -25.013,
+      10.832,
+      15.04,
+      12.89,
+      -46.867,
+      77.796,
+      103.942,
+      55.865,
+      -8.422,
+      71.656,
+      295.589,
+      -5.388
+    ],
+    "batches": [
+      8,
+      11,
+      16,
+      22,
+      23,
+      27,
+      36,
+      51,
+      55,
+      60,
+      80,
+      91,
+      92
+    ]
+  },
+  "gate_matrices": {
+    "G": [
+      {
+        "id": "G1",
+        "pass": true
+      },
+      {
+        "id": "G2",
+        "pass": true
+      },
+      {
+        "id": "G3",
+        "pass": true
+      },
+      {
+        "id": "G4",
+        "pass": true
+      },
+      {
+        "id": "G5",
+        "pass": true
+      },
+      {
+        "id": "G6",
+        "pass": true
+      },
+      {
+        "id": "G7",
+        "pass": true
+      },
+      {
+        "id": "G8",
+        "pass": true
+      },
+      {
+        "id": "G9",
+        "pass": true
+      },
+      {
+        "id": "G10",
+        "pass": true
+      },
+      {
+        "id": "G11",
+        "pass": true
+      },
+      {
+        "id": "G12",
+        "pass": true
+      },
+      {
+        "id": "G13",
+        "pass": true
+      },
+      {
+        "id": "G14",
+        "pass": true
+      },
+      {
+        "id": "G15",
+        "pass": true
+      },
+      {
+        "id": "G16",
+        "pass": true
+      },
+      {
+        "id": "G17",
+        "pass": true
+      },
+      {
+        "id": "G18",
+        "pass": true
+      },
+      {
+        "id": "G19",
+        "pass": true
+      },
+      {
+        "id": "G20",
+        "pass": true
+      },
+      {
+        "id": "G21",
+        "pass": true
+      },
+      {
+        "id": "G22",
+        "pass": true
+      },
+      {
+        "id": "G23",
+        "pass": true
+      },
+      {
+        "id": "G24",
+        "pass": true
+      },
+      {
+        "id": "G25",
+        "pass": true
+      }
+    ],
+    "F": [
+      {
+        "id": "F1",
+        "pass": true
+      },
+      {
+        "id": "F2",
+        "pass": true
+      },
+      {
+        "id": "F3",
+        "pass": true
+      },
+      {
+        "id": "F4",
+        "pass": true
+      },
+      {
+        "id": "F5",
+        "pass": true
+      },
+      {
+        "id": "F6",
+        "pass": true
+      },
+      {
+        "id": "F7",
+        "pass": true
+      },
+      {
+        "id": "F8",
+        "pass": true
+      },
+      {
+        "id": "F9",
+        "pass": true
+      },
+      {
+        "id": "F10",
+        "pass": true
+      },
+      {
+        "id": "F11",
+        "pass": true
+      },
+      {
+        "id": "F12",
+        "pass": true
+      },
+      {
+        "id": "F13",
+        "pass": true
+      },
+      {
+        "id": "F14",
+        "pass": true
+      },
+      {
+        "id": "F15",
+        "pass": true
+      },
+      {
+        "id": "F16",
+        "pass": true
+      },
+      {
+        "id": "F17",
+        "pass": true
+      },
+      {
+        "id": "F18",
+        "pass": true
+      },
+      {
+        "id": "F19",
+        "pass": true
+      },
+      {
+        "id": "F20",
+        "pass": true
+      }
+    ],
+    "AB": [
+      {
+        "id": "V1-1",
+        "pass": true
+      },
+      {
+        "id": "V1-2",
+        "pass": true
+      },
+      {
+        "id": "V1-3",
+        "pass": true
+      },
+      {
+        "id": "V1-4",
+        "pass": true
+      },
+      {
+        "id": "V1-5",
+        "pass": true
+      },
+      {
+        "id": "V1-6",
+        "pass": true
+      },
+      {
+        "id": "V1-7",
+        "pass": true
+      },
+      {
+        "id": "V1-8",
+        "pass": true
+      },
+      {
+        "id": "V2-1",
+        "pass": true
+      },
+      {
+        "id": "V2-2",
+        "pass": true
+      },
+      {
+        "id": "V2-3",
+        "pass": false
+      },
+      {
+        "id": "V2-4",
+        "pass": false
+      },
+      {
+        "id": "V2-5",
+        "pass": true
+      },
+      {
+        "id": "V2-6",
+        "pass": true
+      },
+      {
+        "id": "V2-7",
+        "pass": true
+      },
+      {
+        "id": "V3-1",
+        "pass": true
+      },
+      {
+        "id": "V3-2",
+        "pass": true
+      },
+      {
+        "id": "V3-3",
+        "pass": true
+      },
+      {
+        "id": "V3-4",
+        "pass": true
+      },
+      {
+        "id": "V3-5",
+        "pass": true
+      }
+    ],
+    "V2O": [
+      {
+        "id": "V2O-1",
+        "pass": true
+      },
+      {
+        "id": "V2O-2",
+        "pass": true
+      },
+      {
+        "id": "V2O-3",
+        "pass": true
+      },
+      {
+        "id": "V2O-4",
+        "pass": true
+      },
+      {
+        "id": "V2O-5",
+        "pass": true
+      },
+      {
+        "id": "V2O-6",
+        "pass": true
+      },
+      {
+        "id": "V2O-7",
+        "pass": true
+      },
+      {
+        "id": "V2O-8",
+        "pass": true
+      },
+      {
+        "id": "V2O-9",
+        "pass": false
+      },
+      {
+        "id": "V2O-10",
+        "pass": false
+      }
+    ],
+    "R166F": [
+      {
+        "id": "A1",
+        "pass": true
+      },
+      {
+        "id": "A2",
+        "pass": true
+      },
+      {
+        "id": "A3",
+        "pass": true
+      },
+      {
+        "id": "A4",
+        "pass": true
+      },
+      {
+        "id": "A5",
+        "pass": true
+      },
+      {
+        "id": "A6",
+        "pass": true
+      },
+      {
+        "id": "A7",
+        "pass": true
+      },
+      {
+        "id": "A8",
+        "pass": true
+      },
+      {
+        "id": "B1",
+        "pass": true
+      },
+      {
+        "id": "B2",
+        "pass": true
+      },
+      {
+        "id": "B3",
+        "pass": true
+      },
+      {
+        "id": "B4",
+        "pass": true
+      },
+      {
+        "id": "B5",
+        "pass": true
+      },
+      {
+        "id": "B6",
+        "pass": true
+      },
+      {
+        "id": "B7",
+        "pass": true
+      },
+      {
+        "id": "B8",
+        "pass": true
+      },
+      {
+        "id": "B9",
+        "pass": true
+      },
+      {
+        "id": "B10",
+        "pass": true
+      },
+      {
+        "id": "C1",
+        "pass": true
+      },
+      {
+        "id": "C2",
+        "pass": true
+      },
+      {
+        "id": "C3",
+        "pass": true
+      },
+      {
+        "id": "C4",
+        "pass": true
+      },
+      {
+        "id": "C5",
+        "pass": true
+      },
+      {
+        "id": "C6",
+        "pass": true
+      },
+      {
+        "id": "C7",
+        "pass": true
+      },
+      {
+        "id": "C8",
+        "pass": true
+      },
+      {
+        "id": "C9",
+        "pass": true
+      },
+      {
+        "id": "C10",
+        "pass": true
+      },
+      {
+        "id": "C11",
+        "pass": true
+      },
+      {
+        "id": "C12",
+        "pass": true
+      },
+      {
+        "id": "C13",
+        "pass": true
+      },
+      {
+        "id": "C14",
+        "pass": true
+      },
+      {
+        "id": "C15",
+        "pass": true
+      },
+      {
+        "id": "C16",
+        "pass": true
+      },
+      {
+        "id": "C17",
+        "pass": true
+      },
+      {
+        "id": "D1",
+        "pass": true
+      },
+      {
+        "id": "D2",
+        "pass": true
+      },
+      {
+        "id": "D3",
+        "pass": true
+      },
+      {
+        "id": "D4",
+        "pass": true
+      },
+      {
+        "id": "D5",
+        "pass": true
+      },
+      {
+        "id": "D6",
+        "pass": true
+      },
+      {
+        "id": "D7",
+        "pass": true
+      },
+      {
+        "id": "E1",
+        "pass": true
+      },
+      {
+        "id": "E2",
+        "pass": true
+      },
+      {
+        "id": "E3",
+        "pass": true
+      },
+      {
+        "id": "E4",
+        "pass": true
+      },
+      {
+        "id": "E5",
+        "pass": true
+      },
+      {
+        "id": "E6",
+        "pass": true
+      },
+      {
+        "id": "E7",
+        "pass": true
+      },
+      {
+        "id": "E8",
+        "pass": true
+      },
+      {
+        "id": "E9",
+        "pass": true
+      },
+      {
+        "id": "E10",
+        "pass": true
+      },
+      {
+        "id": "E11",
+        "pass": true
+      },
+      {
+        "id": "E12",
+        "pass": true
+      }
+    ],
+    "first_pass_AB": 16
+  },
+  "calibration_ladder": {
+    "source": "docs/round_summary_202610.md, section 'RMSE evolution' (12-batch protocol)",
+    "protocol": "12 batches; NOT directly comparable with the 86-batch final anchor",
+    "steps": [
+      {
+        "method": "名义参数",
+        "rmse_pct": 70.95,
+        "crashes": "9/12",
+        "within5": "1/12"
+      },
+      {
+        "method": "3D 校准 (mux/mup/dTcin)",
+        "rmse_pct": 37.4,
+        "crashes": "1/12",
+        "within5": "2/12"
+      },
+      {
+        "method": "m_s × mux",
+        "rmse_pct": 37.72,
+        "crashes": "3/12",
+        "within5": "2/12"
+      },
+      {
+        "method": "组合 (3D + m_s)",
+        "rmse_pct": 32.57,
+        "crashes": "1/12",
+        "within5": "2/12"
+      },
+      {
+        "method": "m_s × mup × dTcin (3D)",
+        "rmse_pct": 16.18,
+        "crashes": "1/12",
+        "within5": "2/12"
+      },
+      {
+        "method": "改进 (constant m_s)",
+        "rmse_pct": 7.28,
+        "crashes": "1/12",
+        "within5": "6/12"
+      },
+      {
+        "method": "时变 m_s (最终)",
+        "rmse_pct": 4.48,
+        "crashes": "1/12",
+        "within5": "8/12"
+      }
+    ],
+    "final_86_batch_rmse_pct": 2.3448,
+    "final_86_batch_within5": "86/86"
+  },
+  "evidence_inventory": {
+    "debt_ids": [
+      22,
+      26,
+      27,
+      29,
+      31,
+      36,
+      38,
+      41,
+      42,
+      44,
+      45,
+      47,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92
+    ],
+    "n_debt_ids": 53,
+    "debt_id_max": 92,
+    "signoff_ids": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "n_signoff_ids": 17,
+    "contract_versions": [
+      "v0.1",
+      "v0.2",
+      "v1.0",
+      "v1.1",
+      "v1.2",
+      "v1.3",
+      "v1.4",
+      "v1.5",
+      "v1.6",
+      "v1.7",
+      "v1.8",
+      "v1.9",
+      "v1.10",
+      "v1.11",
+      "v1.12",
+      "v1.13",
+      "v1.14",
+      "v1.15",
+      "v1.16",
+      "v1.17",
+      "v1.18",
+      "v1.19",
+      "v1.20",
+      "v1.21",
+      "v1.22",
+      "v1.23",
+      "v1.24",
+      "v1.25",
+      "v1.26",
+      "v1.27",
+      "v1.28",
+      "v1.29",
+      "v1.30",
+      "v1.31",
+      "v1.32",
+      "v1.33",
+      "v1.34",
+      "v1.35",
+      "v1.36",
+      "v1.37",
+      "v1.38",
+      "v1.39",
+      "v1.40",
+      "v1.41",
+      "v1.42",
+      "v1.43",
+      "v1.44",
+      "v1.45",
+      "v1.46",
+      "v1.47",
+      "v1.48",
+      "v1.49",
+      "v1.50",
+      "v1.51",
+      "v1.52",
+      "v1.53",
+      "v1.54",
+      "v1.55",
+      "v1.56",
+      "v1.57",
+      "v1.58",
+      "v1.59",
+      "v1.60",
+      "v1.61",
+      "v1.62",
+      "v1.63",
+      "v1.64",
+      "v1.65",
+      "v1.66",
+      "v1.67",
+      "v1.68",
+      "v1.69",
+      "v1.70",
+      "v1.71",
+      "v1.72",
+      "v1.73",
+      "v1.74",
+      "v1.75",
+      "v1.76",
+      "v1.77",
+      "v1.78",
+      "v1.79",
+      "v1.80",
+      "v1.81",
+      "v1.82",
+      "v1.83",
+      "v1.84",
+      "v1.85",
+      "v1.86",
+      "v1.87",
+      "v1.88",
+      "v1.89",
+      "v1.90",
+      "v1.91",
+      "v1.92",
+      "v1.93",
+      "v1.94",
+      "v1.95",
+      "v1.96",
+      "v1.97"
+    ],
+    "n_contract_versions": 100,
+    "n_v1_contract_versions": 98,
+    "round_report_ids": [
+      131,
+      132,
+      133,
+      134,
+      135,
+      136,
+      137,
+      138,
+      139,
+      140,
+      141,
+      142,
+      143,
+      144,
+      145,
+      146,
+      147,
+      148,
+      149,
+      150,
+      151,
+      152,
+      153,
+      154,
+      155,
+      156,
+      157,
+      158,
+      159,
+      160,
+      161,
+      162,
+      163,
+      165,
+      166,
+      167
+    ],
+    "n_round_reports": 36,
+    "round_id_max": 167,
+    "n_evidence_json": 147,
+    "n_screenshots": 6
+  }
+}

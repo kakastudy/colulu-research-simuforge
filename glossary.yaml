@@ -1,0 +1,97 @@
+# glossary.yaml — 计量口径字典（M0 冻结）
+# 依据：《工艺领域求解器研发 Workflow》§S1；单位表对齐 indpensim_ode.m / createBatch.m
+
+meta:
+  version: 1.0
+  frozen_at: "2026-10-26"
+  unit_policy: "SI + 显式声明；仿真内部与观测输出分层，禁止隐式换算"
+
+# 物理量两层表：物理量 → 变量名/单位/来源
+quantities:
+  # --- 状态（仿真内部，g/L 系） ---
+  substrate:        { var: S,     unit: g/L,   source: T2, note: "葡萄糖当量" }
+  biomass:          { var: X,     unit: g/L,   source: T2, note: "A0+A1+A3+A4 总和" }
+  penicillin:       { var: P,     unit: g/L,   source: T2 }
+  dissolved_o2:     { var: DO2,   unit: mg/L,  source: T2 }
+  o2_offgas:        { var: O2,    unit: %,     source: T2 }
+  co2_offgas:       { var: CO2,   unit: %,     source: T2 }
+  volume:           { var: V,     unit: L,     source: T2 }
+  weight:           { var: Wt,    unit: kg,    source: T2 }
+  temperature:      { var: T,     unit: K,     source: T2 }
+  ph:               { var: pH,    unit: -,     source: T2, note: "仿真内部存 [H+] mol/L，观测层转 pH" }
+  viscosity:        { var: vis,   unit: cP,    source: T2 }
+  paa:              { var: PAA,   unit: mg/L,  source: T2 }
+  nh3:              { var: NH3,   unit: mg/L,  source: T2 }
+  # --- 速率/通量 ---
+  our:              { var: OUR,   unit: g/min, source: T2, note: "观测层可转 mmol/L/h" }
+  cer:              { var: CER,   unit: g/h,   source: T2 }
+  mux:              { var: mux,   unit: 1/h,   source: T2 }
+  mup:              { var: mup,   unit: 1/h,   source: T2 }
+  # --- 操作量 ---
+  aeration:         { var: Fg,    unit: L/h,   source: T2 }
+  rpm:              { var: RPM,   unit: RPM,   source: T2 }
+  sugar_feed:       { var: Fs,    unit: L/h,   source: T2 }
+  acid_feed:        { var: Fa,    unit: L/h,   source: T2 }
+  base_feed:        { var: Fb,    unit: L/h,   source: T2 }
+  jacket_flow:      { var: Fc,    unit: L/h,   source: T2 }
+  heat_feed:        { var: Fh,    unit: L/h,   source: T2 }
+  water_feed:       { var: Fw,    unit: L/h,   source: T2 }
+  pressure:         { var: pressure, unit: bar, source: T2 }
+  discharge:        { var: Fremoved, unit: L/h, source: T2, note: "负值出流（-4000 = 放罐 4000 L/h）" }
+  paa_feed:         { var: Fpaa,  unit: L/h,   source: T2 }
+  oil_feed:         { var: Foil,  unit: L/h,   source: T2 }
+  ammonia_shots:    { var: NH3_shots, unit: kg, source: T2 }
+
+# 观测通道（易监测量）频率/精度/滞后
+observations:
+  online:
+    - { tag: T,        unit: K,     freq: 0.2h, lag: 0,    quality: "good" }
+    - { tag: pH,       unit: -,     freq: 0.2h, lag: 0,    quality: "good" }
+    - { tag: DO2,      unit: mg/L,  freq: 0.2h, lag: 0,    quality: "good" }
+    - { tag: O2_offgas, unit: %,    freq: 0.2h, lag: 0,    quality: "good" }
+    - { tag: CO2_offgas, unit: %,   freq: 0.2h, lag: 0,    quality: "good" }
+    - { tag: Fg,       unit: L/h,   freq: 0.2h, lag: 0,    quality: "good" }
+    - { tag: Fs,       unit: L/h,   freq: 0.2h, lag: 0,    quality: "good" }
+    - { tag: RPM,      unit: RPM,   freq: 0.2h, lag: 0,    quality: "good" }
+    - { tag: Fremoved, unit: L/h,   freq: 0.2h, lag: 0,    quality: "good" }
+  offline:
+    - { tag: P_offline,    unit: g/L, freq: 12h, lag: 4h, quality: "good", method: "HPLC" }
+    - { tag: X_offline,    unit: g/L, freq: 12h, lag: 4h, quality: "good", method: "干重" }
+    - { tag: PAA_offline,  unit: g/L, freq: 12h, lag: 4h, quality: "good", method: "HPLC" }
+    - { tag: NH3_offline,  unit: g/L, freq: 12h, lag: 4h, quality: "good", method: "比色" }
+    - { tag: Viscosity_offline, unit: cP, freq: 12h, lag: 4h, quality: "good" }
+  rules:
+    - "化验时间戳一律用采样时刻（= 批次内 t），分析滞后 4h 单独登记"
+    - "NaN 通道 = missing，须显式处理（不得静默填充）"
+    - "OUR 由尾气 O2 平衡计算（含惰性气体校正与温压换算），公式引用记录"
+
+# 批次产率口径（V3 轨迹自洽计算，统计 CSV 仅作粗略交叉核对）
+yield_definitions:
+  harvested_during: " -sum(Fremoved * P) * h  [Fremoved 负值出流]"
+  end_in_vessel:    " V_last * P_last"
+  total_in_vessel:  " end_in_vessel + harvested_during"
+  note: "统计 CSV 与 V3 轨迹非同一运行（扰动种子不同），yield 验收以 V3 轨迹自洽口径为准"
+
+# 时间戳与数据窗口纪律
+timestamp_policy:
+  - "UTC + 采样时刻；化验滞后 4h 登记"
+  - "数据窗口登记：起止时间戳、批次、工况、扰动种子"
+  - "合成数据与实产数据在账本中分别标记"
+
+# 数据质量规则（V3 剖析发现，T7 假设）
+data_quality_rules:
+  - id: DQ-1
+    rule: "表头 PAT_ref 通道名含逗号被拆 3 列 → 表头 2239 列与数据 2237 值错位 2 列；解析按位置取前 37 列"
+    level: T7
+  - id: DQ-2
+    rule: "统计 CSV 表头标 (kg) 但数值实为克级（1.0664e6 g = 1066 kg 工业合理）"
+    level: T7
+  - id: DQ-3
+    rule: "统计 CSV end_of_batch 实为终末收获量，非 V3 末行 V*P；V3 CSV 90 批不含终末收获段（10 批含）"
+    level: T7
+  - id: DQ-4
+    rule: "统计 CSV 与 V3 轨迹非同一运行（harvested 双向误差、无系统规律）；V3 轨迹为基准"
+    level: T7
+  - id: DQ-5
+    rule: "离线化验通道 98.2% NaN（仅 12h 采样点有值）；在线通道无 NaN"
+    level: T7

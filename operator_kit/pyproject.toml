@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "penops"
+version = "0.1.0"
+description = "Industrial penicillin fed-batch fermenter simulation operators: callable Python SDK"
+requires-python = ">=3.10"
+dependencies = []
+readme = {text = "penops L1: callable Python SDK for all simulation operators. See penops/__init__.py for full usage.", content-type = "text/plain"}
+license = {text = "internal"}
+keywords = ["fermentation", "simulation", "operator", "IndPenSim"]
+
+[project.optional-dependencies]
+# 引擎依赖由宿主项目 requirements.txt 提供（numpy/pandas/scipy 已锁版本）。
+# 这里只列出可选：需要真实 MCP SDK 调试时才装（L1/L2 默认都不需要）。
+mcp-sdk = ["mcp==1.12.0"]
+
+[tool.setuptools]
+# 只打包 L1 库。L2 是独立协议适配层，按用户要求「不用装载先」，
+# 通过 PYTHONPATH=<operator_kit> python -m penops_mcp 直接运行，不进入安装产物。
+packages = ["penops"]
+
+[tool.pytest.ini_options]
+testpaths = ["tools"]

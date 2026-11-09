@@ -1,0 +1,34 @@
+# ---- 第三方与超大资产（不入库）----
+# IndPenSim 官方 MATLAB 源码与导出的仿真数据（约 290 MB，第三方版权）
+IndPenSim_V2.01/
+100_Batches_IndPenSim/
+# 逐轮研发日志与证据 JSON（约 46 MB，本地工作产物）
+runs/
+# 稿件 PDF / 渲染 HTML（写作中间物）
+paper/*.pdf
+paper/*.html
+# 宣传卡片与过程截图
+docs/promo/
+docs/screenshots/
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# ---- 运行时产物 ----
+*.log
+*.pid
+_dbg.txt
+.ipynb_checkpoints/
+
+# ---- 本地环境 ----
+.workbuddy/
+.DS_Store
+Thumbs.db
+
+# ---- 内部文档 ----
+docs/README.internal.md

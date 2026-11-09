@@ -1,0 +1,6 @@
+100M	tools/vendor/scipy
+0	tools/vendor/scipy-1.14.1-cp312-cp312-win_amd64.whl
+254K	tools/vendor/scipy-1.14.1.dist-info
+37M	tools/vendor/scipy.libs
+--- 文件数 ---
+1760

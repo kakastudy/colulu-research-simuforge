@@ -1,0 +1,137 @@
+# -*- coding: utf-8 -*-
+"""R129aj: Expand calibration to non-golden batches.
+
+From non-golden validation (nominal params):
+- Batch 64: -1.09% (already within 5%)
+- Batch 71: +2.77% (already within 5%)
+- Batch 86: +3.88% (already within 5%)
+- Batch 63: +6.91%
+- Batch 74: +7.08%
+- Batch 72: +7.32%
+- Batch 70: +8.18%
+- Batch 85: +8.40%
+- Batch 93: +8.48%
+- Batch 81: +8.89%
+
+Try to calibrate batches just above 5% using mu_h_scale + mup/mux sweep.
+Focus on batches 63, 74, 72, 70.
+"""
+import os
+import sys
+import json
+import numpy as np
+import pandas as pd
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "candidate", "indpensim", "v0.1")))
+
+from simulate import simulate_open_loop, yield_metrics
+
+
+def build_params(cp):
+    """Build params dict matching diag_final_validation_v3.py exactly."""
+    params = {"mux": cp["mux"], "mup": cp["mup"],
+              "alpha_kla": cp.get("alpha_kla", 85.0),
+              "PAA_c": cp.get("PAA_c", 530000.0), "N_conc_paa": 150000.0, "c_oil": 1000.0,
+              "dist_flag": 1, "dist_tcin_asym": cp["dist_tcin_asym"], "m_s": cp["m_s"]}
+    for key in ["m_paa", "m_s_schedule", "biomass_death_rate", "death_start",
+                "q_co2", "Y_NX", "Y_NP", "vis_scale", "Y_O2_X", "Y_O2_P",
+                "m_O2_X", "mu_h_scale"]:
+        if key in cp:
+            if key == "biomass_death_rate":
+                params["biomass_death_rate"] = cp["biomass_death_rate"]
+                params["death_start"] = cp["death_start"]
+            else:
+                params[key] = cp[key]
+    return params
+
+
+# Nominal params for non-golden batches
+NOMINAL = {"mux": 0.35, "mup": 0.041, "dist_tcin_asym": 20, "m_s": 0.029,
+           "q_co2": 0.12, "Y_NX": 25, "Y_NP": 40, "alpha_kla": 85}
+
+
+def sweep_batch(b, cp):
+    """Sweep mu_h_scale and mup/mux for a batch."""
+    v3 = pd.read_csv(f"data/processed/batches/batch_{b:02d}.csv")
+
+    # Baseline
+    params = build_params(cp)
+    sim, _ = simulate_open_loop(b, params)
+    ym = yield_metrics(sim, v3)
+    base_err = ym["rel_err_total"]
+    print("  Baseline (nominal): yield_err={:+.4f} ({:+.1f}%) P_final={:.2f}".format(
+        base_err, base_err * 100, float(sim["P"].iloc[-1])), flush=True)
+
+    # Try mu_h_scale sweep
+    print("  --- mu_h_scale sweep ---", flush=True)
+    best_err = base_err
+    best_params = dict(cp)
+
+    for scale in [1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 5.0]:
+        cp2 = dict(cp)
+        cp2["mu_h_scale"] = scale
+        params = build_params(cp2)
+        try:
+            sim, _ = simulate_open_loop(b, params)
+            ym = yield_metrics(sim, v3)
+            err = ym["rel_err_total"]
+            marker = " ***" if abs(err) < 0.05 else ""
+            print("    mu_h_scale={:.1f}: yield_err={:+.4f} ({:+.1f}%) P_final={:.2f}{}".format(
+                scale, err, err * 100, float(sim["P"].iloc[-1]), marker), flush=True)
+            if abs(err) < abs(best_err):
+                best_err = err
+                best_params = dict(cp2)
+        except Exception as e:
+            print("    mu_h_scale={:.1f}: FAILED".format(scale), flush=True)
+
+    # Try mup/mux grid (around nominal)
+    print("  --- mup*mux grid ---", flush=True)
+    for mup in [0.039, 0.040, 0.041, 0.042, 0.043]:
+        for mux in [0.34, 0.35, 0.36, 0.37]:
+            cp2 = dict(cp)
+            cp2["mup"] = mup
+            cp2["mux"] = mux
+            params = build_params(cp2)
+            try:
+                sim, _ = simulate_open_loop(b, params)
+                ym = yield_metrics(sim, v3)
+                err = ym["rel_err_total"]
+                marker = " ***" if abs(err) < 0.05 else ""
+                print("    mux={:.2f} mup={:.3f}: yield_err={:+.4f} ({:+.1f}%) P_final={:.2f}{}".format(
+                    mux, mup, err, err * 100, float(sim["P"].iloc[-1]), marker), flush=True)
+                if abs(err) < abs(best_err):
+                    best_err = err
+                    best_params = dict(cp2)
+            except Exception as e:
+                print("    mux={:.2f} mup={:.3f}: FAILED".format(mux, mup), flush=True)
+
+    print("  Best: yield_err={:+.4f} ({:+.1f}%)".format(best_err, best_err * 100), flush=True)
+    return {"batch": b, "base_err": base_err, "best_err": best_err,
+            "best_params": {k: v for k, v in best_params.items() if k != best_params.get("mu_h_scale", 1.0) or True}}
+
+
+def main():
+    print("=" * 80, flush=True)
+    print("R129aj: Expand calibration to non-golden batches", flush=True)
+    print("=" * 80, flush=True)
+
+    # Try batches just above 5%
+    batches = [63, 74, 72, 70]
+
+    all_results = {}
+    for b in batches:
+        print("\n--- Batch {} ---".format(b), flush=True)
+        cp = dict(NOMINAL)
+        result = sweep_batch(b, cp)
+        all_results[b] = result
+
+    # Save
+    dst = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                       "runs", "p3", "d9_nongolden_calibration.json")
+    with open(dst, "w", encoding="utf-8") as f:
+        json.dump(all_results, f, ensure_ascii=False, indent=2, default=str)
+    print("\nSaved: %s" % dst, flush=True)
+
+
+if __name__ == "__main__":
+    main()

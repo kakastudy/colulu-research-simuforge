@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>青霉素反应罐仿真系统 · 研发过程信息图</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,500&family=Noto+Serif+SC:wght@400;600;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F7F3EA; --cream-2:#FBF8F0; --card:#FFFDF8; --line:#E7DECB;
+    --ink:#2B2620; --ink-2:#6B6256; --ink-3:#9A8F7E;
+    --green:#2F6B4F; --green-2:#3E8E6E; --amber:#C8923A; --amber-2:#D9A441;
+    --teal:#2C5F6F; --rust:#A8552E; --rose:#9C4A4A;
+    --shadow:0 18px 40px -24px rgba(60,45,25,.45);
+    --side-w:250px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:
+      radial-gradient(1200px 600px at 50% -10%, #FCF9F1 0%, var(--cream) 55%) fixed,
+      var(--cream);
+    color:var(--ink);
+    font-family:"Noto Sans SC",-apple-system,"Segoe UI",sans-serif;
+    font-weight:300; line-height:1.75; -webkit-font-smoothing:antialiased;
+  }
+  .serif{font-family:"Noto Serif SC","Playfair Display",serif}
+  .play{font-family:"Playfair Display",serif}
+  .num{font-family:"Playfair Display",serif;font-weight:700;font-feature-settings:"tnum"}
+
+  /* ---------- reveal ---------- */
+  .rv{opacity:0;transform:translateY(22px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.7,.2,1)}
+  .rv.in{opacity:1;transform:none}
+
+  /* ============ 左侧导航栏 ============ */
+  .sidebar{position:fixed;top:0;left:0;width:var(--side-w);height:100vh;z-index:50;
+    background:linear-gradient(180deg,#FCF9F1 0%,var(--cream) 60%,#F2ECDC 100%);
+    border-right:1px solid var(--line);box-shadow:6px 0 30px -22px rgba(60,45,25,.6);
+    display:flex;flex-direction:column;overflow:hidden}
+  .vtrack{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--line)}
+  .vtrack i{display:block;width:100%;height:16.6%;background:linear-gradient(180deg,var(--green),var(--amber));transition:height .55s cubic-bezier(.2,.7,.2,1)}
+
+  .brand{padding:22px 22px 16px;display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--line);position:relative}
+  .brand .mk{width:34px;height:34px;border-radius:10px;background:linear-gradient(150deg,var(--green),var(--teal));
+    display:flex;align-items:center;justify-content:center;color:#fff;flex:none}
+  .brand b{font-family:"Noto Serif SC",serif;font-weight:600;font-size:15px;letter-spacing:.01em;display:block;line-height:1.25}
+  .brand span{display:block;font-size:9.5px;color:var(--ink-3);letter-spacing:.16em;margin-top:2px}
+
+  .nav{display:flex;flex-direction:column;gap:5px;padding:16px 14px;flex:1;overflow-y:auto}
+  .nav-btn{appearance:none;border:1px solid transparent;background:transparent;cursor:pointer;
+    display:grid;grid-template-columns:30px 1fr;gap:2px 10px;align-items:center;text-align:left;
+    padding:11px 12px;border-radius:12px;transition:.25s}
+  .nav-btn .nx{grid-row:1/3;font-family:"Playfair Display",serif;font-weight:900;font-size:18px;color:var(--ink-3);line-height:1}
+  .nav-btn .nt{font-family:"Noto Serif SC",serif;font-weight:600;font-size:15px;color:var(--ink);line-height:1.15}
+  .nav-btn .nt small{display:block;font-family:"Noto Sans SC";font-weight:300;font-size:9.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--ink-3);margin-top:3px}
+  .nav-btn:hover{background:var(--cream-2)}
+  .nav-btn[aria-current="true"]{background:var(--ink);border-color:var(--ink);box-shadow:0 10px 22px -14px rgba(43,38,32,.7)}
+  .nav-btn[aria-current="true"] .nx{color:var(--amber-2)}
+  .nav-btn[aria-current="true"] .nt{color:var(--cream-2)}
+  .nav-btn[aria-current="true"] .nt small{color:rgba(247,243,234,.7)}
+
+  .nav-foot{display:flex;gap:8px;padding:0 14px 12px}
+  .nav-foot button{appearance:none;flex:1;cursor:pointer;font-family:"Noto Sans SC";font-size:12px;color:var(--ink-2);
+    background:var(--cream-2);border:1px solid var(--line);border-radius:9px;padding:9px 6px;transition:.2s;letter-spacing:.03em}
+  .nav-foot button:hover:not(:disabled){background:var(--card);color:var(--ink)}
+  .nav-foot button:disabled{opacity:.35;cursor:not-allowed}
+
+  .side-foot{padding:14px 18px 18px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+  .side-foot .sf-meta{display:flex;gap:6px;flex-wrap:wrap}
+  .side-foot .sf-meta span{font-size:10px;color:var(--ink-3);border:1px solid var(--line);background:var(--cream-2);
+    padding:3px 8px;border-radius:20px;letter-spacing:.04em}
+  .side-foot .sf-date{font-family:"Playfair Display",serif;font-size:12px;color:var(--ink-2);letter-spacing:.06em}
+
+  /* ---------- 移动端顶栏 + 遮罩 ---------- */
+  .mtopbar{display:none}
+  .scrim{position:fixed;inset:0;background:rgba(20,16,10,.42);z-index:45;opacity:0;visibility:hidden;transition:.3s}
+  .scrim.show{opacity:1;visibility:visible}
+
+  .main{margin-left:var(--side-w);min-height:100vh}
+  .wrap{max-width:1000px;margin:0 auto;padding:40px 34px 70px}
+  .page[hidden]{display:none}
+
+  /* ---------- hero / 首页 ---------- */
+  header.hero{text-align:center;padding:18px 0 26px;position:relative}
+  .kicker{letter-spacing:.42em;font-size:12px;color:var(--amber);font-weight:500;text-transform:uppercase;margin-bottom:18px}
+  header.hero h1{font-family:"Noto Serif SC",serif;font-weight:900;font-size:42px;line-height:1.18;letter-spacing:.02em}
+  header.hero h1 .em{color:var(--green)}
+  .sub{margin-top:14px;color:var(--ink-2);font-size:15.5px;letter-spacing:.04em}
+  .meta-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+  .chip{font-size:12px;color:var(--ink-2);border:1px solid var(--line);background:var(--cream-2);
+        padding:6px 13px;border-radius:30px;letter-spacing:.05em}
+  .chip b{color:var(--ink);font-weight:500}
+  .rule{height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent);margin:28px 0}
+
+  /* ---------- 通用卡片 / 面板 ---------- */
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 18px 16px;
+        box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .card::after{content:"";position:absolute;left:0;top:0;width:4px;height:100%;background:var(--green)}
+  .card.amber::after{background:var(--amber)} .card.teal::after{background:var(--teal)} .card.rust::after{background:var(--rust)}
+  .card .lab{font-size:12.5px;color:var(--ink-2);letter-spacing:.03em}
+  .card .big{font-family:"Playfair Display",serif;font-weight:900;font-size:38px;line-height:1.04;margin:5px 0 2px}
+  .card .big .u{font-size:17px;font-weight:700;color:var(--ink-2);margin-left:3px}
+  .card .note{font-size:11.5px;color:var(--ink-3);line-height:1.5;margin-top:6px}
+  .card .ba{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:12.5px;color:var(--ink-2)}
+  .card .ba b{font-family:"Playfair Display",serif;color:var(--green);font-size:15px}
+  .arrow{color:var(--ink-3)}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;box-shadow:var(--shadow)}
+  .panel h3{font-family:"Noto Serif SC",serif;font-weight:600;font-size:17px;margin-bottom:12px}
+  .lead{font-size:14.5px;color:var(--ink-2);line-height:1.85}
+  .lead b{color:var(--ink);font-weight:500}
+
+  .s-head{display:flex;align-items:baseline;gap:16px;margin:14px 0 20px}
+  .s-no{font-family:"Playfair Display",serif;font-weight:900;font-size:28px;color:var(--amber);line-height:1;min-width:42px}
+  .s-title{font-family:"Noto Serif SC",serif;font-weight:600;font-size:23px;letter-spacing:.03em}
+  .s-title small{display:block;font-family:"Noto Sans SC";font-weight:300;font-size:12px;color:var(--ink-3);letter-spacing:.16em;text-transform:uppercase;margin-top:4px}
+
+  /* ---------- 首页导航卡片 ---------- */
+  .nav-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:6px}
+  .ncard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;cursor:pointer;
+    box-shadow:var(--shadow);transition:transform .3s,box-shadow .3s;position:relative;overflow:hidden}
+  .ncard:hover{transform:translateY(-4px);box-shadow:0 26px 50px -28px rgba(60,45,25,.5)}
+  .ncard .nx{font-family:"Playfair Display",serif;font-weight:900;font-size:13px;color:var(--amber);letter-spacing:.1em}
+  .ncard h4{font-family:"Noto Serif SC",serif;font-weight:600;font-size:18px;margin:6px 0 6px}
+  .ncard p{font-size:12.8px;color:var(--ink-2);line-height:1.6}
+  .ncard .go{margin-top:12px;font-size:12px;color:var(--teal);font-weight:500;display:inline-flex;gap:6px;align-items:center}
+  .ncard .go .ar{transition:transform .3s}.ncard:hover .go .ar{transform:translateX(4px)}
+
+  /* ---------- 红线 ---------- */
+  .redlines{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:6px}
+  .rl{background:linear-gradient(160deg,#FFFDF8,#FBF6EA);border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center}
+  .rl .v{font-family:"Playfair Display",serif;font-weight:900;font-size:26px;color:var(--rust)}
+  .rl .t{font-size:12.5px;color:var(--ink-2);margin-top:4px;letter-spacing:.02em}
+
+  /* ---------- 时间轴 ---------- */
+  .tl{position:relative;margin-left:8px;padding-left:30px}
+  .tl::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:linear-gradient(var(--amber),var(--teal))}
+  .tl .ev{position:relative;margin:0 0 22px}
+  .tl .ev::before{content:"";position:absolute;left:-29px;top:5px;width:14px;height:14px;border-radius:50%;background:var(--card);border:3px solid var(--amber)}
+  .tl .ev.teal::before{border-color:var(--teal)} .tl .ev.green::before{border-color:var(--green)}
+  .tl .ev .era{font-family:"Playfair Display",serif;font-weight:700;font-size:15px;color:var(--amber);letter-spacing:.04em}
+  .tl .ev.teal .era{color:var(--teal)} .tl .ev.green .era{color:var(--green)}
+  .tl .ev .h{font-family:"Noto Serif SC",serif;font-weight:600;font-size:16px;margin:2px 0 4px}
+  .tl .ev .d{font-size:13.5px;color:var(--ink-2);line-height:1.7}
+
+  /* ---------- 条形 ---------- */
+  .barchart{margin-top:8px}
+  .brow{display:flex;align-items:center;gap:12px;margin:11px 0}
+  .brow .nm{width:120px;font-size:13px;color:var(--ink-2);text-align:right;flex:none}
+  .btrack{flex:1;background:#EFE7D6;border-radius:8px;height:26px;position:relative;overflow:hidden}
+  .bfill{height:100%;border-radius:8px;width:0;transition:width 1.3s cubic-bezier(.2,.7,.2,1)}
+  .bfill.g{background:linear-gradient(90deg,#3E8E6E,#2F6B4F)}
+  .bfill.a{background:linear-gradient(90deg,#D9A441,#C8923A)}
+  .bfill.t{background:linear-gradient(90deg,#3C7E92,#2C5F6F)}
+  .bval{width:64px;font-family:"Playfair Display",serif;font-weight:700;font-size:15px;flex:none}
+
+  /* ---------- 径向 ---------- */
+  .gauges{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+  .gauge{text-align:center}
+  .gauge .cap{font-size:12.5px;color:var(--ink-2);margin-top:6px;letter-spacing:.03em}
+
+  /* ---------- 表 ---------- */
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:4px}
+  th,td{padding:11px 12px;text-align:left;border-bottom:1px solid var(--line)}
+  th{font-family:"Noto Serif SC",serif;font-weight:600;color:var(--ink);font-size:13px;background:#FBF6EA;letter-spacing:.03em}
+  td{color:var(--ink-2)} td b{color:var(--ink);font-weight:500}
+  tr:last-child td{border-bottom:none}
+  .tag{display:inline-block;font-size:11px;padding:2px 9px;border-radius:20px;letter-spacing:.04em}
+  .tag.g{background:#E6F1EA;color:var(--green)} .tag.a{background:#FBEFD8;color:var(--amber)}
+  .tag.t{background:#E4EEF1;color:var(--teal)} .tag.r{background:#F3E2DB;color:var(--rust)}
+
+  /* ---------- 算子网格 ---------- */
+  .ops{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .op{background:var(--cream-2);border:1px solid var(--line);border-radius:14px;padding:16px 17px}
+  .op .ot{font-family:"Noto Serif SC",serif;font-weight:600;font-size:15px;color:var(--teal);margin-bottom:5px}
+  .op .od{font-size:12.8px;color:var(--ink-2);line-height:1.65}
+  .op .od code{font-family:"Playfair Display",serif;background:#EFE7D6;padding:0 5px;border-radius:4px;font-size:12px;color:var(--ink)}
+
+  /* ---------- 原则 ---------- */
+  .prin{display:grid;grid-template-columns:1fr;gap:12px;margin-top:4px}
+  .prow{display:flex;gap:14px;align-items:flex-start;background:var(--cream-2);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .prow .pi{font-family:"Playfair Display",serif;font-weight:900;font-size:20px;color:var(--amber);flex:none;width:30px}
+  .prow .pt{font-family:"Noto Serif SC",serif;font-weight:600;font-size:14.5px}
+  .prow .pd{font-size:13px;color:var(--ink-2);line-height:1.65;margin-top:2px}
+
+  .quote{font-family:"Noto Serif SC",serif;font-style:normal;font-size:16px;line-height:1.9;color:var(--ink);
+    border-left:3px solid var(--amber);padding:6px 0 6px 20px;margin:14px 0}
+  .quote span{color:var(--green);font-weight:600}
+
+  /* ============ 截图图册 ============ */
+  .figs{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .fig{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);
+    cursor:zoom-in;transition:transform .3s,box-shadow .3s;display:flex;flex-direction:column}
+  .fig:hover{transform:translateY(-3px);box-shadow:0 26px 50px -28px rgba(60,45,25,.5)}
+  .fig .shot{position:relative;background:#0d1117;overflow:hidden;aspect-ratio:16/10}
+  .fig .shot img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+  .fig .cap{padding:14px 15px 15px}
+  .fig .cap .ct{font-family:"Noto Serif SC",serif;font-weight:600;font-size:14.5px;display:flex;align-items:center;gap:8px}
+  .fig .cap .ct .dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+  .fig .cap .cd{font-size:12.5px;color:var(--ink-2);line-height:1.6;margin-top:5px}
+  .fig .cap .hint{margin-top:8px;font-size:11px;color:var(--ink-3);letter-spacing:.05em}
+  .fig.wide{grid-column:1 / -1}
+  .fig.wide .shot{aspect-ratio:16/7}
+  .fig.wide .shot img{object-position:center 18%}
+
+  /* ============ 灯箱 ============ */
+  .lb{position:fixed;inset:0;z-index:90;background:rgba(20,16,10,.92);display:none;align-items:center;justify-content:center;padding:30px}
+  .lb.open{display:flex}
+  .lb-in{position:relative;max-width:1180px;width:100%;max-height:92vh;display:flex;flex-direction:column}
+  .lb-in img{max-width:100%;max-height:80vh;object-fit:contain;border-radius:12px;box-shadow:0 30px 80px -20px rgba(0,0,0,.7);background:#0d1117}
+  .lb-cap{color:#F2EAD9;margin-top:14px;text-align:center;font-size:14px;line-height:1.6;max-width:880px;margin-left:auto;margin-right:auto}
+  .lb-cap b{color:#fff;font-family:"Noto Serif SC",serif}
+  .lb-x{position:absolute;top:16px;right:20px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.3);
+    background:rgba(0,0,0,.35);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .lb-nav{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;
+    border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.3);color:#fff;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .lb-nav:hover{background:rgba(0,0,0,.55)}
+  .lb-prev{left:18px}.lb-next{right:18px}
+  .lb-count{margin-top:12px;text-align:center;color:rgba(255,255,255,.6);font-size:12px;letter-spacing:.1em}
+
+  /* ---------- 引言/页脚 ---------- */
+  .home-feature{display:grid;grid-template-columns:1.2fr 1fr;gap:16px;margin-top:8px}
+  footer{margin-top:54px;text-align:center;color:var(--ink-3);font-size:12.5px;letter-spacing:.06em;line-height:1.9}
+  footer .div{height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent);margin:0 auto 22px;max-width:300px}
+  .badge{display:inline-block;border:1px solid var(--line);border-radius:30px;padding:5px 14px;color:var(--ink-2);margin:3px}
+  .back-top{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:12.5px;color:var(--teal);cursor:pointer;background:none;border:none;font-family:"Noto Sans SC";letter-spacing:.04em}
+  .back-top:hover{color:var(--green)}
+
+  @media (max-width:1080px){
+    .cards{grid-template-columns:repeat(2,1fr)}
+  }
+  @media (max-width:880px){
+    :root{--side-w:250px}
+    .sidebar{transform:translateX(-100%);transition:transform .35s cubic-bezier(.2,.7,.2,1);box-shadow:10px 0 40px -18px rgba(20,16,10,.6)}
+    .sidebar.open{transform:none}
+    .main{margin-left:0}
+    .mtopbar{display:flex;position:sticky;top:0;z-index:44;align-items:center;gap:12px;
+      background:rgba(251,248,240,.9);backdrop-filter:saturate(140%) blur(10px);border-bottom:1px solid var(--line);padding:11px 16px}
+    .mtopbar .menu-toggle{appearance:none;border:1px solid var(--line);background:var(--card);border-radius:9px;
+      width:38px;height:38px;cursor:pointer;color:var(--ink);font-size:18px;display:flex;align-items:center;justify-content:center;flex:none}
+    .mtopbar .mt-title{font-family:"Noto Serif SC",serif;font-weight:600;font-size:14.5px;letter-spacing:.02em}
+    .mtopbar .mt-title small{display:block;font-size:9px;letter-spacing:.16em;color:var(--ink-3);text-transform:uppercase;margin-top:1px}
+    .nav-cards{grid-template-columns:1fr}
+    .ops{grid-template-columns:1fr} .figs{grid-template-columns:1fr} .home-feature{grid-template-columns:1fr}
+    header.hero h1{font-size:32px}
+    .wrap{padding:26px 18px 60px}
+    .lb-prev{left:8px}.lb-next{right:8px}
+    .lb-x{top:10px;right:10px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ 左侧多页导航 ============ -->
+<aside class="sidebar" id="sidebar">
+  <div class="vtrack"><i id="progress"></i></div>
+  <div class="brand">
+    <div class="mk">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 3h6M10 3v5.2a4 4 0 0 1-.6 2.1L6 15.4A3.4 3.4 0 0 0 8.9 20h6.2a3.4 3.4 0 0 0 2.9-4.6l-3.4-5.1a4 4 0 0 1-.6-2.1V3"/>
+        <path d="M7.2 13.6h9.6"/>
+      </svg>
+    </div>
+    <div><b>青霉素反应罐<br>研发信息图</b><span>R&amp;D PROCESS</span></div>
+  </div>
+
+  <nav class="nav" id="nav">
+    <button class="nav-btn" data-page="home" aria-current="true"><span class="nx">00</span><span class="nt">首页<small>Overview</small></span></button>
+    <button class="nav-btn" data-page="goal"><span class="nx">01</span><span class="nt">目标 · 轮次<small>Goal · Rounds</small></span></button>
+    <button class="nav-btn" data-page="achieve"><span class="nx">02</span><span class="nt">核心成果<small>Achievement</small></span></button>
+    <button class="nav-btn" data-page="results"><span class="nx">03</span><span class="nt">关键仿真结果<small>Engine Outputs</small></span></button>
+    <button class="nav-btn" data-page="platform"><span class="nx">04</span><span class="nt">仿真平台<small>Platform</small></span></button>
+    <button class="nav-btn" data-page="stack"><span class="nx">05</span><span class="nt">算子 · 方法论<small>Stack · Method</small></span></button>
+  </nav>
+
+  <div class="nav-foot">
+    <button id="prevPage" disabled>‹ 上一项</button>
+    <button id="nextPage">下一项 ›</button>
+  </div>
+
+  <div class="side-foot">
+    <div class="sf-meta">
+      <span>引擎契约 v1.69</span>
+      <span>86 批黄金集</span>
+    </div>
+    <div class="sf-date">更新 · 2026-11-03</div>
+  </div>
+</aside>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="main">
+  <!-- 移动端顶栏 -->
+  <div class="mtopbar">
+    <button class="menu-toggle" id="menu-toggle" aria-label="菜单">≡</button>
+    <div class="mt-title">青霉素反应罐 · 研发信息图<small>R&amp;D PROCESS INFOGRAPHIC</small></div>
+  </div>
+
+  <div class="wrap">
+
+  <!-- ===================== 首页 ===================== -->
+  <section class="page" id="page-home">
+    <header class="hero rv">
+      <div class="kicker">R&amp;D Process · Infographic</div>
+      <h1 class="serif">青霉素<span class="em">反应罐</span>仿真系统<br>研发过程全览</h1>
+      <div class="sub">IndPenSim V2.02 的 Python 复现 · 目标驱动 · 轮次制 · 迭代收敛 · 算子沉淀</div>
+      <div class="meta-row">
+        <span class="chip">引擎契约 <b>v1.69</b></span>
+        <span class="chip">黄金集 <b>86 批</b></span>
+        <span class="chip">研发轮次 <b>R129 → R133</b></span>
+        <span class="chip">更新 <b>2026-11-03</b></span>
+      </div>
+    </header>
+
+    <div class="cards" style="margin-top:30px">
+      <div class="card green rv"><div class="lab">产量偏差 RMSE</div><div class="big num">2.34<span class="u">%</span></div><div class="ba"><span>红线 ≤</span> <b>3.5%</b></div><div class="note">远低于硬性红线，A 档引擎验收基准</div></div>
+      <div class="card green rv"><div class="lab">产量落在 ±5% 内</div><div class="big num">86<span class="u">/86</span></div><div class="ba"><span>达成率</span> <b>100%</b></div><div class="note">全量黄金批一次性通过</div></div>
+      <div class="card rust rv"><div class="lab">灾难性失败</div><div class="big num">0</div><div class="ba"><span>失败可见</span> <b>全绿</b></div><div class="note">I2 越域显式告警，无静默发散</div></div>
+      <div class="card teal rv"><div class="lab">黄金集规模</div><div class="big num">10<span class="arrow" style="font-size:20px">→</span>86</div><div class="ba"><span>扩展</span> <b>+760%</b></div><div class="note">逐批机理标定，滚雪球至全量</div></div>
+    </div>
+
+    <div class="home-feature" style="margin-top:26px">
+      <div class="panel rv">
+        <h3>研发路径 · 一图速览（点击进入各页）</h3>
+        <div class="nav-cards" style="margin-top:8px">
+          <div class="ncard" data-go="goal"><div class="nx">01</div><h4>目标 · 轮次</h4><p>GOAL 三红线冻结；R129→R133 轮次时间轴与黄金集滚雪球。</p><div class="go">进入 <span class="ar">→</span></div></div>
+          <div class="ncard" data-go="achieve"><div class="nx">02</div><h4>核心成果</h4><p>径向达标度、黏度/X_offline 前后对照、通道 A/B/C 分级。</p><div class="go">进入 <span class="ar">→</span></div></div>
+          <div class="ncard" data-go="results"><div class="nx">03</div><h4>关键仿真结果</h4><p>引擎真实输出：批次轨迹、参数试算、通道诊断分布。</p><div class="go">进入 <span class="ar">→</span></div></div>
+          <div class="ncard" data-go="platform"><div class="nx">04</div><h4>仿真平台</h4><p>Web 仿真工作台五大视图真实截图与能力清单。</p><div class="go">进入 <span class="ar">→</span></div></div>
+          <div class="ncard" data-go="stack"><div class="nx">05</div><h4>算子 · 方法论</h4><p>8 大仿真算子 + 5 条研发原则沉淀。</p><div class="go">进入 <span class="ar">→</span></div></div>
+          <div class="ncard" data-go="results"><div class="nx">★</div><h4>证据可复核</h4><p>所有数字来自 ENGINE_CONTRACT / GOAL / runs 回归产物。</p><div class="go">查看 <span class="ar">→</span></div></div>
+        </div>
+      </div>
+      <div class="panel rv" style="display:flex;flex-direction:column">
+        <h3>已上线 · Web 仿真平台</h3>
+        <div class="fig" data-go="platform" style="margin-top:6px;cursor:pointer">
+          <div class="shot"><img src="screenshots/00_shell.png" alt="仿真平台外壳：顶栏+左导航+回归总览首屏" loading="lazy"></div>
+          <div class="cap"><div class="ct"><span class="dot"></span>当场改参数、当场出轨迹</div><div class="cd">R133 同步交付的本地仿真工作台（serve.py @ 127.0.0.1:8770），五大视图覆盖回归总览、过程拓扑、批次工作台、通道诊断与算子库。</div><div class="hint">点击查看平台详情 →</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel rv" style="margin-top:16px">
+      <div class="quote">研发不是"调参凑数"，而是 <span>把每个残差归因到物理机制</span>：从 µₓ×µₚ 脊证伪、kd 数据反算，到黏度测量链换算——每一步都用证据链收敛，而非自由度堆叠。</div>
+    </div>
+  </section>
+
+  <!-- ===================== 目标 · 轮次 ===================== -->
+  <section class="page" id="page-goal" hidden>
+    <div class="s-head rv"><div class="s-no">01</div><div class="s-title">目标驱动<span class="serif">Goal-Driven · 冻结基线</span></div></div>
+    <div class="panel rv">
+      <h3>GOAL.md（v1.0，2026-10-26 签署冻结）</h3>
+      <p class="lead">项目以一份冻结的目标文件为总纲：先做<b>机理引擎（M0–M4）</b>，软测量（B 档）与寻优（C 档）待验证后分阶段入场。验收基准即 <b>V3 黄金集产量偏差 ≤ ±5%（RMSE 口径）</b>，并叠加轨迹级偏差与 C/N/O 守恒检验。</p>
+      <div class="redlines" style="margin-top:18px">
+        <div class="rl"><div class="v">±5%</div><div class="t">产量偏差硬带</div></div>
+        <div class="rl"><div class="v">3.5%</div><div class="t">RMSE 红线</div></div>
+        <div class="rl"><div class="v">0</div><div class="t">灾难性失败</div></div>
+      </div>
+      <p class="lead" style="margin-top:16px">附加约束：黄金集 <b>只增不减</b>；不接实产闭环控制；不做在线 RL 探索；失败必须 <b>可见</b>（越有效域即显式输出状态与原因）。</p>
+    </div>
+
+    <div class="s-head rv" style="margin-top:36px"><div class="s-no">02</div><div class="s-title">轮次 · 迭代<span class="serif">Rounds &amp; Iterations</span></div></div>
+    <div class="panel rv">
+      <div class="tl">
+        <div class="ev teal"><div class="era">R129 系列 · v1.13 → v1.54</div><div class="h">通道攻坚 + 黄金集滚雪球</div><div class="d">逐通道机理标定（CO₂/CER、NH₃、DO₂、黏度、PAA、OUR 等），黄金集从 10 批扩展至 85 批，RMSE 在 2.0–2.4% 区间收敛。D9 目标（RMSE≤3.5%）在 v1.13 即达成。</div></div>
+        <div class="ev"><div class="era">R130 · v1.55</div><div class="h">晚期衰亡机制落地</div><div class="d">在 <code style="font-family:'Playfair Display'">model.rhs</code> 引入晚期门控衰亡（late_death_rate + mu_death_ref，Nestaas-Wang μ_g 门控）与死菌丝自溶回收（death_recycle），X_offline 通道开始改善。</div></div>
+        <div class="ev"><div class="era">R131</div><div class="h">X_offline 结构性通道收口</div><div class="d">从数据反算峰后净比损失率 kd_app（中位 0.0017 h⁻¹）；用 72 组配置<b>证伪</b> (µₓ,µₚ) 脊参数补偿路径；以"早期恒定衰亡 + 自溶回收 + 下调 µₚ"得到 4 批双约束可行解（b27/36/60/92）。回归 RMSE 2.34%，86/86 达标。</div></div>
+        <div class="ev"><div class="era">R132 · v1.58</div><div class="h">参数单源化 + 通道诊断分流</div><div class="d">建立 golden_params 单一事实源。<b>暴露重大口径缺陷</b>：服务层（MCP/dashboard/observe）走旧路径实测 RMSE 25.61%、3/13 达标——修复后 2.24%、13/13。D6 滞后假设被数据证伪，通道分类器落成（A7/B4/C4）。</div></div>
+        <div class="ev green"><div class="era">R133 · v1.60</div><div class="h">黏度口径解耦 + 仿真平台上线</div><div class="d">将黏度"测量链换算"提为批级参数 VIS_OUT_SCALE，解耦 vis（上报通道）与 vis_state（进 kla 状态量）：黏度中位误差 42.5%→18.4%，85/86 批改善，<b>产量路径零回归</b>。同步交付 Web 仿真平台。</div></div>
+        <div class="ev green"><div class="era">R134 · v1.61</div><div class="h">守恒口径收口 + 三类通道判侧</div><div class="d"><b>不改一处机理参数</b>，把守恒从"部分达标"推到达标：C 平衡误差 <b>−64.5% → −1.5%</b>（11/12 进预算），根因是 CER 核算漏乘罐体积、且 CO₂ 除以 44 而非 ×12/44。同时判清三条通道：PAA 属<b>生成侧结构性</b>（波形占 97%，不动）；OUR 属<b>从属带放大</b>（与 X 相关 0.85，禁止单独扫参）；b27/b92 窄窗<b>为真</b>但崩溃深度不可复现。</div></div>
+        <div class="ev green"><div class="era">R135 · v1.62</div><div class="h">M4 签核 · cap→L1 · 服务层对齐 86 批</div><div class="d">GOAL §4 五条 <b>2 达标 / 3 部分 / 0 未达</b>，闸门有条件通过，能力等级 <b>L0 draft → L1 prototype</b>。A 档校验成员从 13 批对齐到 <b>86 批</b>（并行 10.4 min，逐批差 0）。归因侧出现两条"排除性"结论：b91 的 −33% 被证伪（现 <b>+3.52%</b>），PAA/DO2 抑制项在该参数域 <b>恒未激活（Δ=0.00pt）</b>；DO2 判为 OUR 的派生像（<b>R² 0.86</b>），误差源头回到 X 幅度。</div></div>
+        <div class="ev green"><div class="era">R136 · v1.63</div><div class="h">X 通道结构归因：误差是"漂移"不是"标度"</div><div class="d">分段 sim/lab 比值 <b>1.05 → 1.08 → 1.18 → 1.36</b> 单调爬升，峰高 <b>+24%</b>、峰后化验跌 12.8% 而模型只跌 0.7%——所谓"X 整体偏高 20%"是把漂移误读成比例。五类单参数杠杆（衰亡率 / Y_sX / m_s / Y_sP / 组合）在 <b>12 批次 72 个反事实配置</b>里<b>全部</b>把产量推出 ±5%（兑换率约 <b>1:1</b>，最差 1:4.8），而产量余量总共只有 4.8 pt ⇒ <b>X 幅度在现有参数域内不可修复</b>。在线 OUR 与离线 X 同向偏高（1.24× / 1.19×），排除"化验标度"解释。S 通道首次独立评估判 <b>无信息量</b>（补料期绝对误差仅 6 mg/L）。下一步靶点：形态学退化链 a3/a4（当前<b>恒为 0</b>），唯一能降菌不动产素的通道。</div></div>
+        <div class="ev green"><div class="era">R137 · v1.64</div><div class="h">X 的真因不是"整体偏高"，是「该停不停」</div><div class="d">化验 X 峰值中位 <b>150h</b>，峰后斜率化验 <b>−0.040 g/L/h</b>（83/86 批下降），模型却是 <b>+0.013</b>——<b>46/86 批方向相反</b>，分叉集中在 <b>t∈[144,168]</b>（37 批）。在线 OUR 独立佐证：b29 −36%、b56 −65%，而 <b>b8 的 −27% 与模型 −25% 正好对上</b>，b8 也正是 X 最准的批之一（nRMSE 4.9）。<br>顺带关掉两个悬案：①<b>形态学链 a3/a4 恒为 0</b> 确诊为装配缺陷（<code>k_vac</code> 在 86/86 批参数里从未出现，R130 的"液泡化修复"只加代码未接线），但<b>接线无收益</b>——<code>k_vac</code>=0.001 时死菌仅占 8.5%，产量已 <b>−19.3%</b>，因为产素对 a1 是<b>一阶</b>敏感、总生物量只是<b>二阶</b>；②<b>mux 是伪相关</b>：跨批 r=+0.458 很漂亮，一干预却几乎不动（b29 peakR 1.585→1.555），补料流加下它早已饱和，菌量其实由质量平衡 <b>X≈Y_sX×净耗底物</b> 决定。<br>唯一有效的机制是<b>时间门控晚期衰亡</b>（<code>death_start=144, kd=0.005</code>）：X nRMSE 中位 <b>24.6 → 13.5</b>（<b>75/86 改善</b>），且<b>首次不破坏本来准的批</b>（b8 4.9→5.1）。但代价是产量：<b>|yield|≤5 从 86/86 掉到 33/86</b>，5 批崩溃级（b16 −99.8%）。机制成立、<b>常数不能全局拍</b>——28 批双改善（b29 42.0→16.1 且 −3.4%→+2.5%）证明路走得通，R138 改用 <b>OUR 通道逐批定标</b>。</div></div>
+        <div class="ev green"><div class="era">R138 · v1.65</div><div class="h">换档位：X 不再由机理「算」出来，而由在线 OUR「估」出来</div><div class="d">R134–R137 的困境其实是<b>档位错误</b>——GOAL §3 早把「B 软测量（逆问题）」列为交付物，我们却一直在 A 档正问题里硬拍参数。<br>这轮先探了六条路、五条走不通：<b>碳平衡</b>（X 只占碳通量 <b>14%</b>，b8 的呼吸就吃掉 74%）、<b>氮平衡</b>（X 占 N 通量 85% 看似更优，但残差 −41.8%，N 压根不守恒）、<b>氧化学计量</b>（内部 OUR 0.52 vs 导出 1.57 g/L/h，模型自己差 3 倍）、<b>全局 P 降解</b>（44 批证据一致，但加进去每批都变差）、<b>逐批 death_start</b>（b59 产量从 +4.8% 崩到 −27.3%）。<br>走通的那条极简：<code>X_est = X_model · median₅(OUR实测/OUR模型)^0.6</code>。指数 0.6 不是拟合出来的魔法数——模型 OUR 对 X 的弹性 β≈1.67，反演就该取 1/β；α=1（完全信任带噪 OUR）会过冲到 17.2%，α=0 就是原来的 24.0%。<br><b>X 轨迹 nRMSE 23.99% → 5.69%</b>，峰高比 1.155→<b>0.962</b>、末端比 1.380→<b>1.041</b>，15% 以内的批从 16/86 涨到 <b>79/86</b>；5 折交叉验证的 α* 全部落在 0.60、测试集 5.68%，不是过拟合；90% 置信区间实测覆盖率 <b>89.9%</b>（名义 90%）——顺带把 I3 条款也闭合了。<br>A 档一行未动，产量仍是 RMSE 2.345%、86/86 达标。4 批残余失效（b36 的 OUR 实测比模型高 56%），根因是<b>分不清「X 错了」还是「OUR 标度错了」</b>——这是方法的可辨识性边界，不是 bug。</div></div>
+        <div class="ev green"><div class="era">R139 · v1.69</div><div class="h">R138 修对了数字，却修错了对象——加一条 CER 通道就露馅了</div><div class="d">R138 把 X 的 nRMSE 从 24% 压到 5.7%，但它给的解释「模型多产 20% 活菌」经不起第二条通道检验：全局 <code>r_CER = 1.039</code>（模型 CER 基本是准的）而 <code>r_OUR = 0.844</code>。X 若真偏高 20%，氧侧碳侧必须<b>同向</b>偏高——CER 没有。所以 OUR 的偏低主要是<b>导出通道的标度偏差</b>：<code>Y_O2_X / m_O2_X</code> 本就是逐批随机量（b8 是 800/200/15，默认 650/160/17.5）。<br>两条通道的品质可以直接量出来：<code>log r_CER ~ log(X化验/X模型)</code> 斜率 <b>1.005</b>（R² 0.699），<code>r_OUR</code> 是 <b>1.420</b>（R² 仅 0.433）——<b>CER 才是 X 的 1:1 代理</b>。再把每批「批内去均值」后回归，OUR 的系数掉到 <b>0.043</b>、CER 是 <b>0.666</b>：一旦不管「这批整体偏多少」，OUR 对「X 怎么随时间变」几乎零信息。而 X 的主误差恰恰是时间结构——峰后该降不降。<br>分工于是很干净：<b>批级标度交给 OUR，时间形交给 CER</b>。<code>log(X_est/X_model) = 0.599·mean(log r_OUR) + 0.713·(log r_CER − mean)</code>，X 轨迹 nRMSE 中位 <b>23.99% → 3.17%</b>、p90 <b>7.10%</b>、15% 以内 <b>85/86</b>；相对 v1 <b>改善 &gt;3pt 的 36 批、恶化的 0 批</b>。<br>最后一批 b36 用门控拦下：批级 <code>r_OUR</code> 落在 <b>[0.52, 1.28]</b> 之外就判「通道标度不可辨识」，回退机理值并显式报警 → <b>86/86 批 &lt;15%，最坏 12.63%</b>（原来 41.18%），90% 区间也从 ±13pt 收窄到 <b>[−6.8%, +9.5%]</b>。<br>教训（写进方法论）：<b>能识别异常 ≠ 异常是坏的</b>。晚期 OUR 比值上冲这个指标能把 4 个失效批全拦下、只误报 1 批，可一旦拿它冻结校正，<b>52/86 批被误触发、中位从 5.69 恶化到 13.17</b>——因为「晚期比值上冲」在多数批上是<b>真实的模型缺陷</b>，正是观测器要修的东西。判据必须先做反事实全量，不能只看判别力。</div></div>
+        <div class="ev"><div class="era">R139b · v1.69</div><div class="h">「换台机器还能复现吗」——不能，于是把地基补上</div><div class="d">前面 139 轮的结论都建立在<b>会话记忆里的环境</b>上：必须用 Python 3.10、numpy 不能升 2.x、scipy 只能 1.15.3。这些约束一条都没落盘，换台机器或交给别人，第一步就卡住。<br>本轮把四件地基级的事补掉：<b>依赖锁</b>（<code>requirements.txt</code>，8 个包精确版本，附上"为什么不能升"的原因）、<b>复现入口</b>（<code>README.md</code>：环境表 → 三条验收命令 → 期望数值）、<b>路径回退</b>（此前在引擎目录里跑 <code>validate.py</code> 必然 <code>FileNotFoundError</code>，改成 CWD 优先 + 项目根回退）、<b>归因勘误</b>（旧结论「模型多产 20% 活菌」全库点检 8 处，两处历史报告加带日期的勘误横幅，<b>0 处残留</b>）。<br>引擎数值一行未动：零回归 <code>--tol 0</code> → 86 批 <code>max|Δ| = 0.00e+00</code>。顺带判掉一个挂了很久的悬案——<code>tools/vendor/</code> 里那个 scipy 1.14.1 是 <b>cp312</b> 的 wheel，和 3.10 解释器根本不匹配，废弃。<br>一句话：<b>能跑、能验、能交付</b>早就齐了，<b>能复现、能交人</b>今天才算齐。能力到 L2 还差三项（DL σ̂ / 等比衰亡 / b92 故障幅值）。</div></div>
+        <div class="ev red"><div class="era">R140 · v1.69</div><div class="h">把观测器接进回路，产量从 86/86 掉到 6/86 —— 有些"修好"是假的</div><div class="d">三件事一起做。第一件清了欠账：N 平衡一直是唯一破线项（−15.8%，10/12），拆开看是三个实现缺陷——<code>Y_NX/Y_NP</code> 被当成<b>倒数</b>用（MATLAB 注释写的是 <code>mg of N per gram</code>，正确值是 0.010 gN/gX、0.080 gN/gP；原式 <code>P/80 + X/10</code> 让 P 项小 6.4 倍、X 项大 10 倍，<b>两个错误反向抵消</b>，总和看着还行）；漏了 <b>N 池变化</b>（+55 k g）与<b>随罐移除</b>（90 k g），两项合计约占输入的 38%；还有 <code>NH3_shots</code> 整列为零却没人报警。补全后 <b>85/86 批进预算</b>，中位 +9.9%。<br>但真实化学计量口径给出 <b>−58.1%</b>：模型的 <code>Y_NP=40</code>（4% 含氮）对真实青霉素 8.38%、<code>Y_NX=25</code>（2.5%）对真实菌体 8–10%，差 2–3.6 倍，靠两个<b>虚构氮源</b>（PAA 液 150 g/L、油 20 g/L）互相配平。所以结论是：<b>我们的账对了，模型的 N 不守恒</b>。这个区分必须写清楚，否则又是一个"错误的正確"。<br>第二件是判决。把 R139 那个把 X 从 24% 压到 3% 的观测器<b>接进 ODE</b>，每 12h 校正一次菌丝形态。X 确实拉住了（24.5→7.4%），但 <b>P 从 18% 崩到 102%</b>，<b>产量达标从 86/86 掉到 6/86</b>，<b>49 批产素直接归零</b>。机制很干净：开环 X 系统性偏高 → 观测器一直要求缩小 → PAA 相对过量积累 → 触发 <code>P_crit_PAA</code> 抑制 → 产素塌陷 → 氧碳比再偏离 → 正反馈。加了 ±5% 限幅也拦不住。<br>教训（方法论第 3 条）：<b>后处理观测器的增益不能直接当闭环增益用。</b>后处理是"在给定轨迹上做最优拟合"，闭环是"改轨迹再拟合"。前者可以无约束，后者必须过守恒与稳定关。R139 的观测器安全，只因为它<b>改的是上报值、不是 ODE 内部状态</b>——一旦动真格，就等于打破「X 高估 ↔ 产量匹配」这对平衡，把 D-10 的"错误的正確"现场重演一遍。<br>第三件是扫地：删掉 137 MB 的 <code>tools/vendor</code>（一个 cp312 的 scipy wheel，和 3.10 解释器根本不匹配）、12 个空目录、归档 14 个一次性脚本，给 392 个 <code>.py</code> 编了索引。零回归 <b>max|Δ| = 0.00e+00</b>。</div></div>
+        <div class="ev amber"><div class="era">R141 · v1.69（当前）</div><div class="h">把 D-8 实现出来，才发现它的前提是错的</div><div class="d">D-8 挂了三轮：衰亡项 <code>-kd·y[i]</code> 对 a0/a1/a3/a4 <b>等比</b>施加，所以"只移除死菌、保留活菌"表达不出来。这轮把它实现了——<code>death_mode=1</code> 叠加一条形态学链：<b>A1 老化进 A3（菌体内部转移，不动总量）→ A3/A4 溶菌出系统</b>，死菌池首次非零。<br>然后它就失败了，而且失败得很干净。<br>第一条硬事实：<b>A1 占 X 的 80–83%，而 X/A1 在整段发酵里 CV 只有 2.5–3.3%</b>（1.23–1.28）。<code>r_p = μp·a1/2</code> 是一阶。所以 X 和产素<b>共用同一个状态变量</b>——任何状态层面的 X 削减，就是等比例的产素削减。<br>第二条更致命：<code>X = a0+a1+a3+a4</code>，<b>死菌也算 X</b>（化验的总生物量同样是这个口径）。所以"把活菌变成死菌"根本不会降低 X，只会先把 X <b>抬高</b>（死菌池堆起来），而产素立刻下滑。真正能降 X 的只有溶出系统，稳态死菌池 ≈ <code>(age/lysis)·a1</code>、X 的下降速率 ≈ <code>age·a1</code>——<b>和 lysis 无关</b>。<br>推论是解析的：<b>lysis→∞ 时死菌池→0，机制退化成"按 age 直接移除 a1"，也就是等比衰亡的一个特例；lysis 有限时严格更差。</b>实测完全对上——age 固定 0.010，lysis 从 0.01 拉到 1.0，死菌池从 14.2% 掉到 0.4%，X 末从 25.05 降到 22.55，结果一路收敛到"直接砍 a1"的解。<br>十批对照（基线 <b>0/10 破线</b>）把代价摆得很清楚：等比臂能把 X 修到 <b>+32pt</b>；形态学臂最多 <b>+9.8pt</b>，还要背 <b>25% 的死菌池</b>，而产量代价照付——ΔX 中位只有 <b>+0.2~+0.5pt</b>，产量中位却掉 <b>2.5~7.3pt</b>，破线从 0/10 变成 <b>4–7/10</b>。典型 B8：X 只动 0.8pt（噪声级），产量掉 <b>7.25pt</b>。<br>于是三条互不相同的"改状态"路线全部撞墙：R137 等比晚期衰亡 <b>33/86</b>、R140 闭环同化 <b>6/86</b>、R141 形态学链 <b>0/10→4–7/10</b>。而 R139 那个<b>只改上报值</b>的后处理观测器把 X 从 24% 压到 3.2%，零风险。<br>结论所以不是"再换个死法"，而是：<b>X 高估是观测模型的问题（化验 X 的组成 ≠ 模型 a0/a1 的组成），不是状态模型的缺陷。</b>这正面解释了 R140 那个硬否决。<br>方法论第 4 条：<b>"能表达"不等于"有价值"，先证明机制的前提再实现它。</b>如果先写下 <code>X = a0+a1+a3+a4</code> 并问一句"清死菌会让这个和变小吗"，这一轮可以省掉。<br><b>D-8 关闭，L2 阻断项 3 → 2</b>（余 D-2 DL σ̂、D-9 b92 故障幅值）。零回归 <b>max|Δ| = 0.00e+00</b>。</div></div>
+      </div>
+    </div>
+    <div class="panel rv" style="margin-top:16px">
+      <h3>黄金集规模：种子集 → 全量可修批</h3>
+      <div class="barchart">
+        <div class="brow"><div class="nm">起点 v1.13</div><div class="btrack"><div class="bfill teal" data-w="11.6"></div></div><div class="bval num">10</div></div>
+        <div class="brow"><div class="nm">扩展 v1.28</div><div class="btrack"><div class="bfill teal" data-w="29"></div></div><div class="bval num">25</div></div>
+        <div class="brow"><div class="nm">扩展 v1.42</div><div class="btrack"><div class="bfill teal" data-w="65"></div></div><div class="bval num">56</div></div>
+        <div class="brow"><div class="nm">扩展 v1.54</div><div class="btrack"><div class="bfill teal" data-w="98.8"></div></div><div class="bval num">85</div></div>
+        <div class="brow"><div class="nm">收口 v1.62</div><div class="btrack"><div class="bfill g" data-w="100"></div></div><div class="bval num">86</div></div>
+      </div>
+      <p class="lead" style="margin-top:14px;font-size:13px;color:var(--ink-3)">横条按相对最大值（86）归一；黄金集严格"只增不减"，每纳入一批须经双约束（产量 ±5% + 无 catastrophe）校验。</p>
+    </div>
+  </section>
+
+  <!-- ===================== 核心成果 ===================== -->
+  <section class="page" id="page-achieve" hidden>
+    <div class="s-head rv"><div class="s-no">03</div><div class="s-title">成果深读<span class="serif">Achievement Detail</span></div></div>
+
+    <div class="panel rv">
+      <h3>① 整体达标度（径向仪表）</h3>
+      <div class="gauges">
+        <div class="gauge">
+          <svg width="150" height="150" viewBox="0 0 150 150">
+            <circle cx="75" cy="75" r="58" fill="none" stroke="#EFE7D6" stroke-width="13"/>
+            <circle cx="75" cy="75" r="58" fill="none" stroke="#2F6B4F" stroke-width="13" stroke-linecap="round" stroke-dasharray="364.4" stroke-dashoffset="121.3" transform="rotate(-90 75 75)"/>
+            <text x="75" y="70" text-anchor="middle" font-family="Playfair Display" font-weight="900" font-size="30" fill="#2B2620">2.34%</text>
+            <text x="75" y="92" text-anchor="middle" font-size="10.5" fill="#6B6256">RMSE · 红线 3.5%</text>
+          </svg>
+          <div class="cap">产量偏差远低于红线</div>
+        </div>
+        <div class="gauge">
+          <svg width="150" height="150" viewBox="0 0 150 150">
+            <circle cx="75" cy="75" r="58" fill="none" stroke="#EFE7D6" stroke-width="13"/>
+            <circle cx="75" cy="75" r="58" fill="none" stroke="#3E8E6E" stroke-width="13" stroke-linecap="round" stroke-dasharray="364.4" stroke-dashoffset="0" transform="rotate(-90 75 75)"/>
+            <text x="75" y="70" text-anchor="middle" font-family="Playfair Display" font-weight="900" font-size="30" fill="#2B2620">100%</text>
+            <text x="75" y="92" text-anchor="middle" font-size="10.5" fill="#6B6256">86/86 批 ±5% 内</text>
+          </svg>
+          <div class="cap">全量黄金批一次通过</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel rv" style="margin-top:16px">
+      <h3>② 关键通道误差改善（前后对照）</h3>
+      <div class="barchart">
+        <div class="brow"><div class="nm">黏度 nRMSE（前）</div><div class="btrack"><div class="bfill a" data-w="100"></div></div><div class="bval num">42.5%</div></div>
+        <div class="brow"><div class="nm">黏度 nRMSE（后）</div><div class="btrack"><div class="bfill g" data-w="43.3"></div></div><div class="bval num">18.4%</div></div>
+        <div class="brow"><div class="nm">X_offline 12批均值（前）</div><div class="btrack"><div class="bfill a" data-w="100"></div></div><div class="bval num">16.6%</div></div>
+        <div class="brow"><div class="nm">X_offline 12批均值（后）</div><div class="btrack"><div class="bfill g" data-w="70.5"></div></div><div class="bval num">11.7%</div></div>
+      </div>
+      <p class="lead" style="margin-top:14px;font-size:13px;color:var(--ink-3)">黏度改善源于"测量链换算"而非改机理；X_offline 改善源于衰亡机制 + 自溶回收。二者均<b>不触动产量路径</b>（零回归）。</p>
+    </div>
+
+    <div class="panel rv" style="margin-top:16px">
+      <h3>③ 通道诊断分级（D6 健康视图）</h3>
+      <p class="lead">15 个化验/软测量通道按拟合质量分为三级，导向差异化处理策略：</p>
+      <div style="margin:16px 0 4px;height:30px;border-radius:8px;overflow:hidden;display:flex">
+        <div style="width:46.7%;background:linear-gradient(90deg,#3E8E6E,#2F6B4F);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12.5px">A 类 7</div>
+        <div style="width:26.7%;background:linear-gradient(90deg,#D9A441,#C8923A);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12.5px">B 类 4</div>
+        <div style="width:26.6%;background:linear-gradient(90deg,#A8552E,#9C4A4A);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12.5px">C 类 4</div>
+      </div>
+      <div class="barchart" style="margin-top:10px">
+        <div class="brow"><div class="nm" style="color:var(--green)">A 类 · 优</div><div class="btrack"><div class="bfill g" data-w="46.7"></div></div><div class="bval num" style="color:var(--green)">7</div></div>
+        <div class="brow"><div class="nm" style="color:var(--amber)">B 类 · 可用</div><div class="btrack"><div class="bfill a" data-w="26.7"></div></div><div class="bval num" style="color:var(--amber)">4</div></div>
+        <div class="brow"><div class="nm" style="color:var(--rust)">C 类 · 待攻</div><div class="btrack"><div class="bfill r" data-w="26.6" style="background:linear-gradient(90deg,#9C4A4A,#A8552E)"></div></div><div class="bval num" style="color:var(--rust)">4</div></div>
+      </div>
+      <p class="lead" style="margin-top:12px;font-size:13px;color:var(--ink-3)"><b>A</b>（Viscosity、X_offline、CO₂、CER、P_offline、V、Wt）已贴合；<b>B</b>（OUR、P、NH₃、O₂）幅度偏差；<b>C</b>（PAA_offline R²0.40、DO₂ R²0.58、pH、T）拟合弱，列为后续攻坚。</p>
+    </div>
+  </section>
+
+  <!-- ===================== 关键仿真结果 ===================== -->
+  <section class="page" id="page-results" hidden>
+    <div class="s-head rv"><div class="s-no">04</div><div class="s-title">关键仿真结果<span class="serif">Engine Outputs · 真实引擎产出</span></div></div>
+    <p class="lead rv" style="margin-bottom:14px">以下为 <b>引擎真实运行产出</b>（非示意图）：选批轨迹、参数试算重算、通道逐批分布。点击下方任意图可<b>放大查看</b>。</p>
+
+    <div data-gallery="results">
+      <div class="figs">
+        <div class="fig rv">
+          <div class="shot"><img src="screenshots/04_batch_trajectory.png" alt="批次工作台 · 青霉素轨迹：仿真(teal) vs 实测(orange)，b08，nRMSE 10.7%，产量相对误差 −4.04%" loading="lazy"></div>
+          <div class="cap"><div class="ct"><span class="dot"></span>批次轨迹 · 仿真 vs 实测</div><div class="cd">青霉素 P 浓度逐时轨迹。b08 峰值 ≈ 37.5 g/L，仿真与离线化验高度吻合（nRMSE 10.7%）。</div><div class="hint">点击放大 · 批次工作台视图</div></div>
+        </div>
+        <div class="fig rv">
+          <div class="shot"><img src="screenshots/05_batch_trial.png" alt="参数试算：拖动 μx/μp/KLa 滑块 → 引擎在线重算该批（13.5s），输出试验产量与实测对比" loading="lazy"></div>
+          <div class="cap"><div class="ct"><span class="dot"></span>参数试算 · 实时重算</div><div class="cd">滑动 μₓ / μₚ / KLa 三个旋钮 → 调 /api/simulate 当场重算该批，13.5s 返回试验产量、波形与崩溃判定。</div><div class="hint">点击放大 · 实时仿真能力</div></div>
+        </div>
+        <div class="fig rv">
+          <div class="shot"><img src="screenshots/06_channels.png" alt="通道诊断：黏度逐批 nRMSE 分布直方图 + 误差构成（形状残差 vs 幅度偏差）散点" loading="lazy"></div>
+          <div class="cap"><div class="ct"><span class="dot"></span>通道诊断 · 误差归因</div><div class="cd">左：黏度逐批 nRMSE 分布（中位 18.4%）；右：误差构成散点——可见残差主体是幅度偏差而非形状，佐证"测量链换算"方向正确。</div><div class="hint">点击放大 · 通道诊断视图</div></div>
+        </div>
+        <div class="fig rv">
+          <div class="shot"><img src="screenshots/01_overview.png" alt="回归总览：86批产量误差分布 + 通道×批次健康矩阵热力图" loading="lazy"></div>
+          <div class="cap"><div class="ct"><span class="dot"></span>回归总览 · 86 批健康矩阵</div><div class="cd">全部 86 批逐批产量误差（虚线 ±5% 红线）；下方为 15 通道 × 86 批健康矩阵，绿=healthy、橙=warning、红=critical。</div><div class="hint">点击放大 · 总览视图</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 仿真平台 ===================== -->
+  <section class="page" id="page-platform" hidden>
+    <div class="s-head rv"><div class="s-no">05</div><div class="s-title">仿真平台<span class="serif">Live Simulation Platform</span></div></div>
+    <p class="lead rv" style="margin-bottom:14px">R133 将算子库封装为本地仿真服务（<code style="background:#EFE7D6;padding:1px 6px;border-radius:4px;font-family:'Playfair Display'">serve.py @ 127.0.0.1:8770</code>），前端五大视图。下列为<b>平台真实截图</b>，点击放大。</p>
+
+    <div data-gallery="platform">
+      <div class="figs">
+        <div class="fig wide rv">
+          <div class="shot"><img src="screenshots/00_shell.png" alt="平台外壳：顶栏（品牌+KPI）+ 左导航（总览/拓扑/批次/通道/算子）+ 主区首屏" loading="lazy"></div>
+          <div class="cap"><div class="ct"><span class="dot"></span>平台外壳 · 五视图导航</div><div class="cd">深色工作台外壳：顶栏常驻 4 项关键 KPI，左侧为五大视图导航，主区为首屏"回归总览"。</div><div class="hint">点击放大</div></div>
+        </div>
+        <div class="fig rv">
+          <div class="shot"><img src="screenshots/02_topology.png" alt="过程拓扑：种子罐→发酵罐→收获主链 + 六个伴生回路胶囊与沿时剖面" loading="lazy"></div>
+          <div class="cap"><div class="ct"><span class="dot"></span>过程拓扑视图</div><div class="cd">工艺链路胶囊（主指标=当前批代表值）+ 沿时剖面 + 回路负载 + 相位/可观测性。</div><div class="hint">点击放大</div></div>
+        </div>
+        <div class="fig rv">
+          <div class="shot"><img src="screenshots/03_batch_grid.png" alt="批次工作台：86个批次网格（底色=产量误差），右侧轨迹/参数/通道健康" loading="lazy"></div>
+          <div class="cap"><div class="ct"><span class="dot"></span>批次工作台 · 选批</div><div class="cd">86 个批次以底色编码 |产量误差|；点选任意批即加载其轨迹、参数覆盖项与通道健康。</div><div class="hint">点击放大</div></div>
+        </div>
+        <div class="fig rv">
+          <div class="shot"><img src="screenshots/07_operators.png" alt="仿真算子库：机理右端/积分器/主仿真/指标/反演/寻优等算子卡片 + 批级可覆盖参数面" loading="lazy"></div>
+          <div class="cap"><div class="ct"><span class="dot"></span>仿真算子库</div><div class="cd">每个算子是独立可调用确定性函数，附源文件与参数面（全部经 build_params 单入口装配）。</div><div class="hint">点击放大</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel rv" style="margin-top:16px">
+      <h3>五大视图 · 能力交付清单</h3>
+      <table style="margin-top:14px">
+        <thead><tr><th>视图</th><th>核心能力</th><th>状态</th></tr></thead>
+        <tbody>
+          <tr><td><b>回归总览</b></td><td>86 批产量误差分布 / 通道×批次健康矩阵</td><td><span class="tag g">已交付</span></td></tr>
+          <tr><td><b>过程拓扑</b></td><td>工艺链路胶囊 + 沿时剖面 + 回路负载</td><td><span class="tag g">已交付</span></td></tr>
+          <tr><td><b>批次工作台</b></td><td>单批轨迹 + 通道健康 + 参数试算</td><td><span class="tag g">已交付</span></td></tr>
+          <tr><td><b>通道诊断</b></td><td>逐通道 A/B/C 分级 + 误差归因</td><td><span class="tag g">已交付</span></td></tr>
+          <tr><td><b>仿真算子库</b></td><td>算子卡片 + 批级可覆盖参数面</td><td><span class="tag g">已交付</span></td></tr>
+        </tbody>
+      </table>
+      <p class="lead" style="margin-top:14px;font-size:13px;color:var(--ink-3)">从"只读报告页"升级为"当场改参数、当场出轨迹"的真仿真工作台。</p>
+    </div>
+  </section>
+
+  <!-- ===================== 算子 · 方法论 ===================== -->
+  <section class="page" id="page-stack" hidden>
+    <div class="s-head rv"><div class="s-no">06</div><div class="s-title">算子 · 仿真库<span class="serif">Operator &amp; Simulation Stack</span></div></div>
+    <p class="lead rv" style="margin-bottom:14px">核心引擎 <code style="background:#EFE7D6;padding:1px 6px;border-radius:4px;font-family:'Playfair Display'">candidate/indpensim/v0.1/</code> 是 IndPenSim 的 Python 复现，沉淀为可复用的算子与仿真能力：</p>
+    <div class="ops">
+      <div class="op rv"><div class="ot">机理 ODE 右端</div><div class="od"><code>model.rhs</code>：33 维状态 / 26 维输入 / 105 维参数，BDF 积分逐区间推进。</div></div>
+      <div class="op rv"><div class="ot">衰亡机制算子</div><div class="od">恒定衰亡（biomass_death_rate + death_start）+ 晚期门控衰亡（late_death_rate + mu_death_ref）+ 自溶回收（death_recycle）。</div></div>
+      <div class="op rv"><div class="ot">kd 数据反算</div><div class="od">峰后表观净比损失率 kd_app = −(dlnX/dt + D)，Savitzky-Golay 平滑后从轨迹反推，不再自由扫参。</div></div>
+      <div class="op rv"><div class="ot">黏度测量链换算</div><div class="od">VIS_OUT_SCALE 把状态量 a₀^(1/3) 与离线表观黏度解耦：vis（上报）↔ vis_state（进 kla）。</div></div>
+      <div class="op rv"><div class="ot">参数装配单源</div><div class="od"><code>build_params()</code> + <code>golden_params.py</code> 单一事实源，杜绝服务层口径漂移。</div></div>
+      <div class="op rv"><div class="ot">仿真 API 服务</div><div class="od"><code>serve.py</code>：POST /api/simulate，86 批即时改参出轨迹，支撑 Web 平台。</div></div>
+      <div class="op rv"><div class="ot">D6 健康视图</div><div class="od">逐通道 nRMSE 分级（healthy/warning/critical），滞后无关误差诊断。</div></div>
+      <div class="op rv"><div class="ot">通道分类器</div><div class="od">四量诊断（nRMSE / R² / gain / lag），自动归 A/B/C 三级并给处置建议。</div></div>
+    </div>
+
+    <div class="s-head rv" style="margin-top:36px"><div class="s-no">07</div><div class="s-title">研发方法论<span class="serif">Principles</span></div></div>
+    <div class="prin">
+      <div class="prow rv"><div class="pi">①</div><div><div class="pt">目标冻结，红线否决</div><div class="pd">任何改进不得突破 ±5% / 3.5% / 0-catastrophic 三红线。R132 中"按 1/gain 改黏度标度"的捷径因使 86/86→63/86 被产量红线直接否决。</div></div></div>
+      <div class="prow rv"><div class="pi">②</div><div><div class="pt">证据链优先于自由度</div><div class="pd">残差先归因再修：黏度 corr(nRMSE, |相对偏差|)=0.975 → 判定残差是"幅度"非"形状"，故只做测量链换算而非改机理。</div></div></div>
+      <div class="prow rv"><div class="pi">③</div><div><div class="pt">失败必须可见（I2）</div><div class="pd">越有效域、积分发散一律显式输出状态与原因，永不静默回归；crash 分 normal/benign/catastrophic 三级并附证据。</div></div></div>
+      <div class="prow rv"><div class="pi">④</div><div><div class="pt">单一事实源</div><div class="pd">参数只经 build_params 装配，golden_params 为唯一真值；曾因服务层绕路导致 RMSE 25.61% 的 10× 口径漂移，已根除。</div></div></div>
+      <div class="prow rv"><div class="pi">⑤</div><div><div class="pt">零回归护栏</div><div class="pd">每次结构性改动后跑全量黄金集回归，产量路径须逐位不变（R133 黏度解耦即验证零回归）。</div></div></div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="div"></div>
+    <div>青霉素反应罐仿真系统 · 研发过程信息图（多页交互版）</div>
+    <div style="margin:10px 0">
+      <span class="badge">引擎契约 v1.69</span>
+      <span class="badge">IndPenSim V2.02 复现</span>
+      <span class="badge">Python · SciPy BDF</span>
+      <span class="badge">86 批黄金集</span>
+    </div>
+    <div>生成于 2026-11-03 · 数据来源 ENGINE_CONTRACT / GOAL / runs 回归产物 · 平台截图取自本地运行实例</div>
+    <button class="back-top" id="backTop">↑ 返回首页</button>
+  </footer>
+
+  </div>
+</div>
+
+<!-- ============ 灯箱 ============ -->
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-x" id="lb-x" aria-label="关闭">×</button>
+  <button class="lb-nav lb-prev" id="lb-prev" aria-label="上一张">‹</button>
+  <button class="lb-nav lb-next" id="lb-next" aria-label="下一张">›</button>
+  <div class="lb-in">
+    <img id="lb-img" src="" alt="">
+    <div class="lb-cap" id="lb-cap"></div>
+    <div class="lb-count" id="lb-count"></div>
+  </div>
+</div>
+
+<script>
+  const PAGES=['home','goal','achieve','results','platform','stack'];
+  const navEl=document.getElementById('nav');
+  const progEl=document.getElementById('progress');
+  const sidebar=document.getElementById('sidebar');
+  const scrim=document.getElementById('scrim');
+  const prevBtn=document.getElementById('prevPage');
+  const nextBtn=document.getElementById('nextPage');
+  let current='home';
+
+  function reveal(pg){
+    const rvs=pg.querySelectorAll('.rv');
+    rvs.forEach((el,i)=>{ el.classList.remove('in'); });
+    requestAnimationFrame(()=>{ rvs.forEach((el,i)=> setTimeout(()=>el.classList.add('in'), Math.min(i*55,600))); });
+  }
+  function goPage(id, push){
+    if(!PAGES.includes(id)) id='home';
+    current=id;
+    PAGES.forEach(p=>{ document.getElementById('page-'+p).hidden=(p!==id); });
+    document.querySelectorAll('.nav-btn').forEach(b=> b.setAttribute('aria-current', String(b.dataset.page===id)));
+    const idx=PAGES.indexOf(id);
+    progEl.style.height=((idx+1)/PAGES.length*100)+'%';
+    prevBtn.disabled=(idx===0);
+    nextBtn.disabled=(idx===PAGES.length-1);
+    const pg=document.getElementById('page-'+id);
+    window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
+    reveal(pg);
+    if(push!==false) history.replaceState(null,'','#'+id);
+    // 移动端：导航后收起抽屉
+    sidebar.classList.remove('open'); scrim.classList.remove('show');
+  }
+  document.querySelectorAll('.nav-btn').forEach(b=> b.addEventListener('click', ()=> goPage(b.dataset.page)) );
+  document.querySelectorAll('[data-go]').forEach(el=> el.addEventListener('click', ()=> goPage(el.dataset.go)) );
+  document.getElementById('menu-toggle').addEventListener('click', ()=>{ sidebar.classList.toggle('open'); scrim.classList.toggle('show'); });
+  scrim.addEventListener('click', ()=>{ sidebar.classList.remove('open'); scrim.classList.remove('show'); });
+  prevBtn.addEventListener('click', ()=>{ const i=PAGES.indexOf(current); if(i>0) goPage(PAGES[i-1]); });
+  nextBtn.addEventListener('click', ()=>{ const i=PAGES.indexOf(current); if(i<PAGES.length-1) goPage(PAGES[i+1]); });
+  document.getElementById('backTop').addEventListener('click', ()=> goPage('home'));
+
+  // 初始路由
+  const init=(location.hash||'#home').replace('#','');
+  goPage(init, false);
+
+  // ============ 灯箱 ============
+  const lb=document.getElementById('lb'), lbImg=document.getElementById('lb-img'),
+        lbCap=document.getElementById('lb-cap'), lbCount=document.getElementById('lb-count');
+  let LB_ITEMS=[], LB_I=0;
+  function showLB(){
+    const it=LB_ITEMS[LB_I];
+    lbImg.src=it.img; lbImg.alt=it.cap;
+    lbCap.innerHTML='<b>'+it.cap+'</b>';
+    lbCount.textContent=(LB_I+1)+' / '+LB_ITEMS.length;
+  }
+  function openLB(figEl){
+    const gal=figEl.closest('[data-gallery]');
+    LB_ITEMS=[...gal.querySelectorAll('.fig')].map(f=>{
+      const im=f.querySelector('img'); const ct=f.querySelector('.ct');
+      return {img:im.getAttribute('src'), cap:(ct?ct.textContent.trim():im.alt)};
+    });
+    LB_I=LB_ITEMS.findIndex(x=>x.img===figEl.querySelector('img').getAttribute('src'));
+    if(LB_I<0) LB_I=0;
+    lb.classList.add('open'); lb.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden';
+    showLB();
+  }
+  function closeLB(){ lb.classList.remove('open'); lb.setAttribute('aria-hidden','true'); document.body.style.overflow=''; }
+  function step(d){ LB_I=(LB_I+d+LB_ITEMS.length)%LB_ITEMS.length; showLB(); }
+  document.querySelectorAll('.fig').forEach(f=> f.addEventListener('click', ()=> openLB(f)) );
+  document.getElementById('lb-x').addEventListener('click', closeLB);
+  document.getElementById('lb-prev').addEventListener('click', ()=>step(-1));
+  document.getElementById('lb-next').addEventListener('click', ()=>step(1));
+  lb.addEventListener('click', e=>{ if(e.target===lb) closeLB(); });
+  document.addEventListener('keydown', e=>{
+    if(!lb.classList.contains('open')) return;
+    if(e.key==='Escape') closeLB();
+    else if(e.key==='ArrowLeft') step(-1);
+    else if(e.key==='ArrowRight') step(1);
+  });
+</script>
+</body>
+</html>

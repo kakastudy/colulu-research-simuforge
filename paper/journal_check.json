@@ -1,0 +1,121 @@
+{
+ "round": "journal",
+ "verdict": "PASS",
+ "n_pass": 12,
+ "n_checks": 12,
+ "checks": [
+  {
+   "id": "J1",
+   "name": "no internal development-process provenance in the manuscript",
+   "ok": true,
+   "detail": {
+    "n_leaks": 0,
+    "leaks": []
+   }
+  },
+  {
+   "id": "J2",
+   "name": "all headline numbers present",
+   "ok": true,
+   "detail": {
+    "n_expected": 22,
+    "missing": []
+   }
+  },
+  {
+   "id": "J3",
+   "name": "all referenced figure files exist and are non-empty",
+   "ok": true,
+   "detail": {
+    "n": 19,
+    "bad": []
+   }
+  },
+  {
+   "id": "J4",
+   "name": "figure labels are unique",
+   "ok": true,
+   "detail": {
+    "labels": [
+     "Fig. 1",
+     "Fig. 2",
+     "Fig. 3",
+     "Fig. 4",
+     "Fig. 5",
+     "Fig. 6",
+     "Fig. 7",
+     "Fig. S1",
+     "Fig. S7",
+     "Fig. 9",
+     "Fig. S2",
+     "Fig. 8",
+     "Fig. 10",
+     "Fig. 11",
+     "Fig. S3",
+     "Fig. 12",
+     "Fig. S4",
+     "Fig. S5",
+     "Fig. S6"
+    ]
+   }
+  },
+  {
+   "id": "J5",
+   "name": "Highlights section with 5 bullets",
+   "ok": true,
+   "detail": {}
+  },
+  {
+   "id": "J6",
+   "name": "Keywords line present",
+   "ok": true,
+   "detail": {}
+  },
+  {
+   "id": "J7",
+   "name": "journal module structure complete (Elsevier style)",
+   "ok": true,
+   "detail": {
+    "missing": []
+   }
+  },
+  {
+   "id": "J8",
+   "name": "reference list has 40 entries",
+   "ok": true,
+   "detail": {
+    "n": 40
+   }
+  },
+  {
+   "id": "J9",
+   "name": "every reference is cited in the body",
+   "ok": true,
+   "detail": {
+    "uncited": []
+   }
+  },
+  {
+   "id": "J10",
+   "name": "every author-year citation resolves to a reference entry",
+   "ok": true,
+   "detail": {
+    "unresolved": []
+   }
+  },
+  {
+   "id": "J11",
+   "name": "author placeholders limited to permitted fields",
+   "ok": true,
+   "detail": {
+    "count": 5
+   }
+  },
+  {
+   "id": "J12",
+   "name": "introduction uses prose objectives, not a bolded bullet list",
+   "ok": true,
+   "detail": {}
+  }
+ ]
+}

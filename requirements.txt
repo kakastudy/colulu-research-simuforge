@@ -1,0 +1,38 @@
+# 青霉素反应罐 — 依赖锁（复现基线）
+# 生成：2026-11-04；来源 = 实测运行环境（非推导）
+# 解释器：CPython 3.10.5 64-bit（Windows）
+#   实测路径：C:\Users\liuli\AppData\Local\Programs\Python\Python310\python.exe
+#
+# 用法：
+#   python -m pip install -r requirements.txt
+#   python tools/r134_zero_regression.py --tol 0     # 应得 max|Δ|=0.00e+00
+#
+# ---- 硬约束（踩过的坑，勿升级）----
+# 1) numpy 必须 < 2.0。代码用 np.trapz；numpy 2.x 已移除该别名（改为 np.trapezoid），
+#    conservation_metrics.py 等会直接崩。R134 已因这个原因回退过一版。
+# 2) scipy 1.15.x 的 BDF/Radau 与 1.14.x 在 b27/b92 窄窗边缘解不一致；
+#    契约 v1.61 的零回归基线是在 1.15.3 上取的，升级即需重跑全量零回归。
+# 3) pandas 2.x 的 read_csv 默认 dtype 推断与 1.x 不同，processed CSV 读取口径按 2.x 固化。
+
+numpy==1.26.4
+pandas==2.3.3
+scipy==1.15.3
+
+# 平台导出（platform/export_data.py）与图表
+matplotlib==3.8.4
+openpyxl==3.1.2
+
+# state.yaml / glossary.yaml 解析
+PyYAML==6.0.1
+
+# 回归与单元测试（tools/ 下 347 处 import pytest）
+pytest==7.4.3
+
+# MCP 服务层（R166 / D-85）：mcp_server.py 的 FastMCP 来源
+# 优先 `from fastmcp import FastMCP`；未装该发行版时回退官方 SDK 内置实现
+# `mcp.server.fastmcp.FastMCP`（同构 tool / run / list_tools API）。
+# **刻意不安装 fastmcp 发行版**：2.x 全系依赖 rich>=13.9.4 / pydantic>=2.11 /
+# 更高 mcp / anyio 4.x；实测 pip dry-run（2.0.0 / 2.14.7）分别会连带升级
+# 11 / 30+ 个包（含 anyio、rich、fastapi、starlette、pydantic），破坏上面的复现锁。
+# 结论：D-85 由「官方 SDK 兼容层 + 依赖锁登记」关闭，而非引入新包。
+mcp==1.12.0

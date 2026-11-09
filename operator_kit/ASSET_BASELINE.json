@@ -1,0 +1,20 @@
+{
+  "created_at": "2026-11-08 21:10:28",
+  "root": "C:\\Users\\liuli\\Desktop\\AI4S\\青霉素反应罐",
+  "files": {
+    "candidate/indpensim/v0.1/mcp_server.py": "6263c73f747edbff599b32a1157f62b897afa760732bab27856314ab3a9e7aae",
+    "candidate/indpensim/v0.1/model.py": "64ce1fd790f926698a1563b40aa9b63c0edbac66088a9cedc35d73edd33ae8e6",
+    "candidate/indpensim/v0.1/simulate.py": "815619d9075ba3bb79d495fb572c78b8091d7992586732b478400a024595d8e6",
+    "candidate/indpensim/v0.1/golden_params.py": "62f1f190214321320b917ab771c5b462a5aab27a4801f30e2bf76f030dbec532",
+    "candidate/indpensim/v0.1/soft_sensing.py": "5940d02ecf208e8f146c64c75132ee48267162a6e49f653ea85a6375785db095",
+    "candidate/indpensim/v0.1/observe.py": "7e73d49adee13fda805904364315f7100574828ed850458b0b0d6dfc76df32c7",
+    "candidate/indpensim/v0.1/solver_chain.py": "a46035293c89c9c0c09ac5826e6b92c0136f9c4def933def440ddc71dd1816ae",
+    "platform_v2/engine_api.py": "9cb3dd3f72cbe258b3c590545110fcf2b42beb6c581c7e29c57e08e170e8b1fc",
+    "platform_v2/scan.py": "a6718452d4ceb30af4b0ef2845e4412f48e005079503778d350552515d9e10d4",
+    "platform_v2/param_catalog.py": "950042b53da7a75797f94e46a0aa3e497a1611a6aaa11645f70d9c6af11816a0",
+    "platform/ops_registry.py": "a2426e1e9a9cb0ba7c11150052586eb17f20814953c9419261bf221c66ff58b7",
+    "platform/serve.py": "fa401e9d65093047b729a8203138f5d54c05c6d61b92f22ad9cb4c6b1bb1346b",
+    "GOAL.md": "e6993e1c326e5572116bbf979a88259474b678f997d10825558f6a569fcfcdd6",
+    "ENGINE_CONTRACT.md": "8c960083febd53de4498c14ccf4977224884bd0850c0e00ac1126ad86ec4e96e"
+  }
+}

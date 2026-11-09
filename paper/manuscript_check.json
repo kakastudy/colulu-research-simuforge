@@ -1,0 +1,299 @@
+{
+ "tool": "paper/check_manuscript.py",
+ "verdict": "PASS",
+ "n_pass": 22,
+ "n_checks": 22,
+ "figures": [
+  {
+   "label": "Fig. 12",
+   "path": "figures/fig12_pfd.png",
+   "bytes": 358761
+  },
+  {
+   "label": "Fig. 2",
+   "path": "figures/fig2_model.png",
+   "bytes": 273547
+  },
+  {
+   "label": "Fig. 1",
+   "path": "figures/fig1_framework.png",
+   "bytes": 227012
+  },
+  {
+   "label": "Fig. 3",
+   "path": "figures/fig3_validation.png",
+   "bytes": 114773
+  },
+  {
+   "label": "Fig. S1",
+   "path": "figures/figS1_channels.png",
+   "bytes": 94908
+  },
+  {
+   "label": "Fig. 4",
+   "path": "figures/fig4_tautologies.png",
+   "bytes": 160690
+  },
+  {
+   "label": "Fig. 6",
+   "path": "figures/fig6_limits.png",
+   "bytes": 116285
+  },
+  {
+   "label": "Fig. 5",
+   "path": "figures/fig5_perturbation.png",
+   "bytes": 155769
+  },
+  {
+   "label": "Fig. S2",
+   "path": "figures/figS2_platform.png",
+   "bytes": 257330
+  },
+  {
+   "label": "Fig. 7",
+   "path": "figures/fig7_baselines.png",
+   "bytes": 539942
+  },
+  {
+   "label": "Fig. 8",
+   "path": "figures/fig8_distribution.png",
+   "bytes": 398455
+  },
+  {
+   "label": "Fig. 11",
+   "path": "figures/fig11_multibaseline.png",
+   "bytes": 400750
+  },
+  {
+   "label": "Fig. 9",
+   "path": "figures/fig9_certificates.png",
+   "bytes": 378711
+  },
+  {
+   "label": "Fig. S6",
+   "path": "figures/figS6_epistemic_sankey.png",
+   "bytes": 309092
+  },
+  {
+   "label": "Fig. S7",
+   "path": "figures/figS7_governance.png",
+   "bytes": 232473
+  },
+  {
+   "label": "Fig. 10",
+   "path": "figures/fig10_evidence_matrix.png",
+   "bytes": 331894
+  },
+  {
+   "label": "Fig. S4",
+   "path": "figures/figS4_channel_heatmap.png",
+   "bytes": 218930
+  },
+  {
+   "label": "Fig. S5",
+   "path": "figures/figS5_injection_heatmap.png",
+   "bytes": 232782
+  },
+  {
+   "label": "Fig. S3",
+   "path": "figures/figS3_lifecycle.png",
+   "bytes": 181048
+  }
+ ],
+ "checks": [
+  {
+   "id": "C1",
+   "name": "86-batch RMSE 2.3448% computed from final_validation_v2.json",
+   "ok": true,
+   "got": {
+    "rmse": 2.3448,
+    "n": 86
+   }
+  },
+  {
+   "id": "C2",
+   "name": "86/86 within +/-5%",
+   "ok": true,
+   "got": 86
+  },
+  {
+   "id": "C3",
+   "name": "coverage tautology value matches manuscript",
+   "ok": true,
+   "got": {
+    "coverage": 0.899548532731377,
+    "deltas": {
+     "X": 0.0,
+     "P": 0.0,
+     "PAA": 0.0,
+     "vis": 0.0
+    }
+   }
+  },
+  {
+   "id": "C4",
+   "name": "innovation trigger 27/32 = 84.38%",
+   "ok": true,
+   "got": {
+    "scanned": 32,
+    "degraded": 27
+   }
+  },
+  {
+   "id": "C5",
+   "name": "V2 full-amplitude max|delta| = 96.058784 pp, 3/6 collapses",
+   "ok": true,
+   "got": {
+    "max": 96.058784,
+    "collapse": 3
+   }
+  },
+  {
+   "id": "C6",
+   "name": "unseen seed 11 = 99.852368 pp / 2 collapses",
+   "ok": true,
+   "got": {
+    "max": 99.852368,
+    "collapse": 2,
+    "seed": 11
+   }
+  },
+  {
+   "id": "C7",
+   "name": "A/B 18/20 NO_GO and V2 optimisation NO_GO",
+   "ok": true,
+   "got": {
+    "ab": [
+     18,
+     20
+    ],
+    "optim": [
+     8,
+     10
+    ]
+   }
+  },
+  {
+   "id": "C8",
+   "name": "five-channel health 77/0/5/4",
+   "ok": true,
+   "got": {
+    "normal": 77,
+    "benign": 0,
+    "degraded": 5,
+    "catastrophic": 4
+   }
+  },
+  {
+   "id": "C9",
+   "name": "platform gate 25/25 and final check 20/20",
+   "ok": true,
+   "got": {
+    "gate": [
+     25,
+     25
+    ],
+    "final": [
+     20,
+     20
+    ]
+   }
+  },
+  {
+   "id": "C10",
+   "name": "all headline numbers appear verbatim in the manuscript",
+   "ok": true,
+   "got": {
+    "missing": []
+   }
+  },
+  {
+   "id": "C11",
+   "name": "19 figure references resolve to non-empty PNG files",
+   "ok": true,
+   "got": {
+    "n": 19,
+    "bad": []
+   }
+  },
+  {
+   "id": "C12",
+   "name": "every figure has a bold standalone caption",
+   "ok": true,
+   "got": 19
+  },
+  {
+   "id": "C13",
+   "name": "vector PDF counterparts for all figures except the Canvas PFD",
+   "ok": true,
+   "got": {
+    "n_pdf": 18,
+    "missing": []
+   }
+  },
+  {
+   "id": "C14",
+   "name": "11 main-text tables present",
+   "ok": true,
+   "got": 11
+  },
+  {
+   "id": "C15",
+   "name": "machine-generated supplementary tables present",
+   "ok": true,
+   "got": 13589
+  },
+  {
+   "id": "C16",
+   "name": "39 numbered references, contiguous 1..39",
+   "ok": true,
+   "got": {
+    "bib_entries": 39,
+    "numbered": 39,
+    "first_last": [
+     1,
+     39
+    ]
+   }
+  },
+  {
+   "id": "C17",
+   "name": "every reference 1..33 is cited at least once",
+   "ok": true,
+   "got": {
+    "n_cited": 33,
+    "not_cited": []
+   }
+  },
+  {
+   "id": "C18",
+   "name": "no ${...} template placeholders",
+   "ok": true,
+   "got": null
+  },
+  {
+   "id": "C19",
+   "name": "author/funding placeholders are explicit and confined to declarations",
+   "ok": true,
+   "got": 5
+  },
+  {
+   "id": "C20",
+   "name": "honesty statements present (in silico, no MATLAB bit-exact, no hold-out, L3 unexecuted)",
+   "ok": true,
+   "got": null
+  },
+  {
+   "id": "C21",
+   "name": "Data and Code Availability + Limitations + Competing interests sections exist",
+   "ok": true,
+   "got": null
+  },
+  {
+   "id": "C22",
+   "name": "companion deliverables all present",
+   "ok": true,
+   "got": null
+  }
+ ]
+}

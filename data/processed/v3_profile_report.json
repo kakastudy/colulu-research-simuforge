@@ -1,0 +1,23 @@
+{
+  "source": "C:\\Users\\admin\\Desktop\\AI4S研究\\青霉素反应罐\\100_Batches_IndPenSim\\Mendeley_data\\100_Batches_IndPenSim_V3.csv",
+  "header_anomaly": "PAT_ref 通道名含逗号被拆 3 列 → 表头 2239 列与数据 2237 值错位 2 列；用位置取前 37 列规避",
+  "n_batches": 100,
+  "n_rows_total": 113935,
+  "validation": {
+    "harvested_during_rel_err_max": 1.189056146188771,
+    "harvested_during_rel_err_p95": 0.7013796451176134,
+    "end_in_vessel_rel_err_max": 2.0293503500093917,
+    "total_rel_err_max": 1.4731283771168038,
+    "fault_match_all": true
+  },
+  "stats_csv_findings": [
+    "表头标 (kg) 但数值实为克级（1.0664e6 g = 1066 kg 工业合理；若按 kg 则 1066 t 不可能）",
+    "end_of_batch 列实为终末收获量，非 V3 末行 V*P；V3 CSV 90 批不含终末收获段（10 批含）",
+    "yield_total = harvested_during + end_harvest（与 MATLAB 源码 end - harvested 公式不一致）"
+  ],
+  "yield_total_g_min": 535411.8525,
+  "yield_total_g_max": 4556491.721999999,
+  "yield_total_g_mean": 2884721.040708,
+  "fault_batches": 10,
+  "elapsed_s": 24.5
+}

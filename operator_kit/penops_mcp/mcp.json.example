@@ -1,0 +1,15 @@
+{
+  "_status": "NOT_INSTALLED — 本轮按用户要求不装载、不启动、不注册",
+  "_usage": "以后要装载时，只把下面 mcpServers 这一段合并进 ~/.workbuddy/mcp.json；不要连同 _status/_usage 一起复制。路径已按本机实测填好。",
+  "_transport": "stdio（一行一个 JSON-RPC 消息）；服务不监听任何端口、不写任何文件",
+  "mcpServers": {
+    "penops": {
+      "command": "C:/Users/liuli/AppData/Local/Programs/Python/Python310/python.exe",
+      "args": ["-m", "penops_mcp", "--profile", "capabilities"],
+      "env": {
+        "PYTHONPATH": "C:/Users/liuli/Desktop/AI4S/青霉素反应罐/operator_kit",
+        "PENOPS_ENGINE_ROOT": "C:/Users/liuli/Desktop/AI4S/青霉素反应罐"
+      }
+    }
+  }
+}

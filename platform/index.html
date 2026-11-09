@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" href="data:," />
+<title>IndPenSim 发酵过程仿真平台</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ 顶栏 ============ -->
+  <header class="nav" data-region="nav">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 3h6M10 3v5.2a4 4 0 0 1-.6 2.1L6 15.4A3.4 3.4 0 0 0 8.9 20h6.2a3.4 3.4 0 0 0 2.9-4.6l-3.4-5.1a4 4 0 0 1-.6-2.1V3"/>
+          <path d="M7.2 13.6h9.6"/>
+        </svg>
+      </div>
+      <div class="brand-t">
+        <b>IndPenSim 仿真平台</b>
+        <span id="brand-sub">PENICILLIN FED-BATCH · A 档机理引擎</span>
+      </div>
+    </div>
+
+    <div class="nav-kpi" id="nav-kpi"></div>
+
+    <div class="nav-actions">
+      <button class="icon-btn" id="btn-theme" title="切换明暗主题" data-theme-toggle aria-label="切换主题">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+        </svg>
+      </button>
+      <button class="icon-btn" id="btn-about" title="关于本平台" aria-label="关于">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.6v.2"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============ 左导航 ============ -->
+  <nav class="rail" data-region="rail-left" id="rail"></nav>
+
+  <!-- ============ 主区 ============ -->
+  <main class="main" data-region="main">
+
+    <!-- 总览 -->
+    <section class="view" id="v-overview">
+      <div class="view-head">
+        <div>
+          <h1>回归总览</h1>
+          <p>86 批黄金集逐批校准评估 · 红线：RMSE ≤ 3.5%、±5% 内 100% · catastrophic 4 已登记 / 0 新发（classify_health 五通道）</p>
+        </div>
+        <div class="spacer"></div>
+        <div class="seg" id="seg-err-mode">
+          <button data-mode="abs" aria-pressed="true">绝对偏差</button>
+          <button data-mode="signed" aria-pressed="false">带符号</button>
+        </div>
+      </div>
+
+      <div class="grid g-4" id="kpi-grid"></div>
+
+      <div id="xobs" class="mt"></div>
+
+      <div class="grid g-2 mt" style="grid-template-columns: 1.35fr 1fr;">
+        <div class="panel">
+          <div class="panel-h">
+            <h2>产量相对误差 · 逐批</h2>
+            <span class="hint">虚线 = ±5% 红线；点大小 = 该批平均通道 nRMSE</span>
+            <div class="spacer"></div>
+            <span class="tag mute" id="err-note">86 批</span>
+          </div>
+          <div class="panel-b"><div id="chart-yield"></div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-h">
+            <h2>通道健康分布</h2>
+            <span class="hint">healthy &lt;5% / warning 5–15% / critical &gt;15%</span>
+          </div>
+          <div class="panel-b"><div id="chart-health"></div></div>
+        </div>
+      </div>
+
+      <div class="panel mt">
+        <div class="panel-h">
+          <h2>通道 × 批次 健康矩阵</h2>
+          <span class="hint">悬停查看单格；点击进入该通道诊断</span>
+          <div class="spacer"></div>
+          <div class="legend">
+            <span><i style="background:var(--ok)"></i>healthy</span>
+            <span><i style="background:var(--warn)"></i>warning</span>
+            <span><i style="background:var(--crit)"></i>critical</span>
+          </div>
+        </div>
+        <div class="panel-b"><div id="heat"></div></div>
+      </div>
+    </section>
+
+    <!-- 过程拓扑 -->
+    <section class="view" id="v-topology" hidden>
+      <div class="view-head">
+        <div>
+          <h1>过程拓扑</h1>
+          <p>主链：种子罐 → 发酵罐 → 收获；六个伴生回路决定罐内状态可观测性与可控制性</p>
+        </div>
+        <div class="spacer"></div>
+        <div class="seg" id="seg-topo-batch"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-h">
+          <h2>工艺链路</h2>
+          <span class="hint">胶囊主指标 = 该节点当前批次的代表值</span>
+          <div class="spacer"></div>
+          <span class="tag mute" id="topo-batch-note">—</span>
+        </div>
+        <div class="panel-b"><div id="topo"></div></div>
+      </div>
+
+      <div class="grid g-3 mt">
+        <div class="panel">
+          <div class="panel-h"><h2>沿时剖面</h2><div class="spacer"></div><span class="hint" id="prof-ch">青霉素 P</span></div>
+          <div class="panel-b"><div id="profile"></div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-h"><h2>回路负载</h2><span class="hint">相对额定值</span></div>
+          <div class="panel-b"><div class="bars" id="loop-bars"></div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-h"><h2>相位与可观测性</h2></div>
+          <div class="panel-b"><div class="kv" id="topo-kv"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 批次工作台 -->
+    <section class="view" id="v-batch" hidden>
+      <div class="view-head">
+        <div>
+          <h1>批次工作台</h1>
+          <p>仿真轨迹 vs 化验/在线实测 · 切换通道叠加对比 · 点击曲线上任意时刻查看该时刻快照</p>
+        </div>
+        <div class="spacer"></div>
+        <span class="tag mute" id="batch-badge">—</span>
+      </div>
+
+      <div class="grid" style="grid-template-columns: 300px 1fr;">
+        <div class="panel">
+          <div class="panel-h"><h2>批次</h2><div class="spacer"></div><span class="hint">底色 = |产量误差|</span></div>
+          <div class="panel-b"><div class="bgrid" id="batch-grid"></div></div>
+        </div>
+
+        <div>
+          <div class="grid g-4" id="batch-kpi"></div>
+
+          <div class="panel mt">
+            <div class="panel-h">
+              <h2>通道轨迹</h2>
+              <div class="seg" id="seg-series"></div>
+              <div class="spacer"></div>
+              <div class="legend">
+                <span><i style="background:var(--accent)"></i>仿真</span>
+                <span><i style="background:var(--warn)"></i>实测</span>
+              </div>
+            </div>
+            <div class="panel-b"><div id="chart-series"></div></div>
+          </div>
+
+          <div class="grid g-2 mt">
+            <div class="panel">
+              <div class="panel-h"><h2>该批参数</h2><span class="hint">COMBINED 覆盖项</span></div>
+              <div class="panel-b"><div class="kv" id="batch-params"></div></div>
+            </div>
+            <div class="panel">
+              <div class="panel-h"><h2>该批通道健康</h2></div>
+              <div class="panel-b"><div id="batch-channels"></div></div>
+            </div>
+          </div>
+
+          <div class="panel mt">
+            <div class="panel-h">
+              <h2>参数试算</h2>
+              <span class="hint">改参数 → 现场调用引擎重算该批</span>
+              <div class="spacer"></div>
+              <span class="tag mute" id="trial-state">检测中…</span>
+            </div>
+            <div class="panel-b" id="trial-body"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 通道诊断 -->
+    <section class="view" id="v-channels" hidden>
+      <div class="view-head">
+        <div>
+          <h1>通道诊断</h1>
+          <p>A 标度型 / B 动力型 / C 结构型 —— 只有 A 类允许调参，C 类只登记不硬凑</p>
+        </div>
+        <div class="spacer"></div>
+        <div class="seg" id="seg-cls">
+          <button data-cls="all" aria-pressed="true">全部</button>
+          <button data-cls="A" aria-pressed="false">A</button>
+          <button data-cls="B" aria-pressed="false">B</button>
+          <button data-cls="C" aria-pressed="false">C</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-h"><h2>通道档案</h2><span class="hint">nRMSE 为 86 批中位；gain = 仿真/实测幅度比</span></div>
+        <div style="max-height: 372px; overflow: auto;"><table class="tbl" id="tbl-channels"></table></div>
+      </div>
+
+      <div class="grid g-2 mt">
+        <div class="panel">
+          <div class="panel-h"><h2>误差构成</h2><span class="hint">形状残差 vs 幅度偏差</span></div>
+          <div class="panel-b"><div id="chart-scatter"></div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-h"><h2>单通道逐批分布</h2><div class="spacer"></div><span class="hint" id="dist-ch">黏度(化验)</span></div>
+          <div class="panel-b"><div id="chart-dist"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 算子库 -->
+    <section class="view" id="v-operators" hidden>
+      <div class="view-head">
+        <div>
+          <h1>仿真算子库</h1>
+          <p>机理右端 / 积分器 / 主仿真 / 指标 / 反演 / 寻优 —— 每个算子都是可独立调用的确定性函数</p>
+        </div>
+        <div class="spacer"></div>
+        <span class="tag ok" id="op-count">—</span>
+      </div>
+
+      <div class="grid g-2" id="op-grid"></div>
+
+      <div class="panel mt">
+        <div class="panel-h">
+          <h2>批级可覆盖参数面</h2>
+          <span class="hint">全部经 build_params 单入口装配；缺省值 = 母模型默认</span>
+        </div>
+        <div style="max-height: 330px; overflow: auto;"><table class="tbl" id="tbl-knobs"></table></div>
+      </div>
+
+      <div class="panel mt">
+        <div class="panel-h"><h2>契约与口径</h2></div>
+        <div class="panel-b">
+          <div class="grid g-3">
+            <div><div class="tiny muted">参数装配</div><div class="mono" id="op-contract">—</div></div>
+            <div><div class="tiny muted">产量口径</div><div class="mono">harvested + V·P</div></div>
+            <div><div class="tiny muted">化验滞后</div><div class="mono">OFFLINE_DELAY_H = 4.0 h（V3 离线列已自带）</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 观察-控制工作台（R167 / PH5 剩余 / R164-12） -->
+    <section class="view" id="v-workbench" hidden>
+      <div class="view-head">
+        <div>
+          <h1>观察 · 控制工作台</h1>
+          <p>A/B/C/D 四档能力运行时装载与调用；L0 冻结基线不变，L3 切换决策未执行</p>
+        </div>
+        <div class="spacer"></div>
+        <span class="tag mute" id="wb-state">检测中…</span>
+      </div>
+
+      <div class="grid g-4" id="wb-arch"></div>
+
+      <div class="mt" id="wb-tiers"></div>
+
+      <div class="grid g-2 mt">
+        <div class="panel" id="wb-form">
+          <div class="panel-h"><h2>能力调用</h2></div>
+          <div class="panel-b tiny muted">从上方选择一个已装载能力，填写参数后现场调用引擎 / 求解器 / 算子。</div>
+        </div>
+        <div class="panel">
+          <div class="panel-h"><h2>证据与边界</h2><span class="hint">只读 runs/ 产物</span></div>
+          <div class="panel-b" id="wb-evidence"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============ 右栏 ============ -->
+  <aside class="side" data-region="rail-right" id="side"></aside>
+
+  <!-- ============ 状态栏 ============ -->
+  <footer class="status" data-region="status">
+    <span class="dot"></span>
+    <span id="st-engine">engine ready</span>
+    <span id="st-contract">—</span>
+    <span class="spacer"></span>
+    <span id="st-gen">—</span>
+  </footer>
+</div>
+
+<!-- ============ 抽屉 ============ -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-hidden="true">
+  <div class="drawer-h">
+    <h3 id="drawer-title">详情</h3>
+    <div class="spacer"></div>
+    <button class="icon-btn" id="drawer-close" aria-label="关闭">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+        <path d="M6 6l12 12M18 6L6 18"/>
+      </svg>
+    </button>
+  </div>
+  <div class="drawer-b" id="drawer-body"></div>
+</aside>
+
+<div class="tip" id="tip"></div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

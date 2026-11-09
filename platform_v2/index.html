@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" href="data:," />
+<title>IndPenSim 仿真计算平台 v2</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ 顶栏 ============ -->
+  <header class="nav" data-region="nav">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 3h6M10 3v5.2a4 4 0 0 1-.6 2.1L6 15.4A3.4 3.4 0 0 0 8.9 20h6.2a3.4 3.4 0 0 0 2.9-4.6l-3.4-5.1a4 4 0 0 1-.6-2.1V3"/>
+          <path d="M7.2 13.6h9.6"/>
+        </svg>
+      </div>
+      <div class="brand-t">
+        <b>IndPenSim 仿真计算平台</b>
+        <span id="brand-sub">青霉素补料分批发酵罐 · 机理求解器</span>
+      </div>
+    </div>
+
+    <div class="nav-kpi" id="nav-kpi"></div>
+
+    <div class="nav-actions">
+      <button class="icon-btn" id="btn-theme" title="切换明暗主题" aria-label="切换主题">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============ 左导航 ============ -->
+  <nav class="rail" id="rail"></nav>
+
+  <!-- ============ 主区 ============ -->
+  <main class="main" id="main">
+
+    <!-- ===== 仿真台（主视图）===== -->
+    <section class="view" id="v-bench">
+      <div class="view-head">
+        <div>
+          <h1>仿真台</h1>
+          <p>配置工况 → 调用 33 维机理引擎 → 读全状态轨迹。参数表由引擎源码派生，改代码即改面板。</p>
+        </div>
+        <div class="spacer"></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="tag mute" id="bench-state">引擎就绪</span>
+          <button class="btn" id="btn-rerun" title="忽略缓存，按当前工况真实重算一次并新增一条留痕">重新计算</button>
+          <button class="btn primary" id="btn-run">运行仿真</button>
+        </div>
+      </div>
+
+      <div class="panel" id="bench-prog" hidden>
+        <div class="panel-b" style="padding:9px 14px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span class="tag acc" id="bench-prog-tag" style="flex:none">计算中</span>
+            <div class="prog" style="flex:1;height:5px"><i id="bench-prog-bar"></i></div>
+            <span class="tiny muted" id="bench-prog-txt" style="flex:none">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== 运算历史：每次真实运算自动落盘留痕，点卡片即回放（零计算）===== -->
+      <div class="panel mt" id="hist-panel">
+        <div class="panel-h">
+          <h2>运算历史</h2>
+          <span class="tag mute" id="hist-n">—</span>
+          <div class="spacer"></div>
+          <span class="hint" id="hist-note">每次真实运算自动留痕 · 点击「查看结果」直接回放，无需重算</span>
+          <button class="btn sm" id="btn-hist-more" hidden>显示全部</button>
+          <button class="btn sm" id="btn-hist-refresh" title="刷新历史">刷新</button>
+          <button class="btn sm" id="btn-hist-toggle" aria-expanded="true">收起 ▴</button>
+        </div>
+        <div class="panel-b" id="hist-body">
+          <div class="hist-grid" id="hist-list"></div>
+        </div>
+      </div>
+
+      <div class="grid" style="grid-template-columns: 340px minmax(0,1fr); align-items:start">
+        <!-- 左：工况配置 -->
+        <div>
+          <div class="panel">
+            <div class="panel-h"><h2>工况</h2><div class="spacer"></div><span class="hint" id="cfg-fp">—</span></div>
+            <div class="panel-b">
+              <div class="tiny muted" style="margin-bottom:5px">批次底座</div>
+              <select class="inp" id="sel-batch"></select>
+              <div class="tiny muted" style="margin:11px 0 5px">预设工况</div>
+              <select class="inp" id="sel-preset"></select>
+              <div style="display:flex;gap:7px;margin-top:11px">
+                <button class="btn sm" id="btn-clear" style="flex:1">清空覆盖</button>
+                <button class="btn sm" id="btn-reset" style="flex:1">恢复基准</button>
+              </div>
+              <div class="tiny muted" style="margin:12px 0 5px">轨迹分辨率</div>
+              <select class="inp" id="sel-stride">
+                <option value="1">全量 · 1149 点（0.2h）</option>
+                <option value="3">抽稀 3× · 约 383 点</option>
+                <option value="6" selected>抽稀 6× · 约 192 点</option>
+                <option value="12">抽稀 12× · 约 96 点</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="panel mt">
+            <div class="panel-h">
+              <h2>参数覆盖</h2>
+              <div class="spacer"></div>
+              <span class="tag acc" id="ov-count">0</span>
+            </div>
+            <div class="panel-b" style="padding-top:9px">
+              <input class="inp" id="prm-search" placeholder="搜索参数（名称 / 键 / 说明）…" style="margin-bottom:8px" />
+              <div id="param-groups"></div>
+            </div>
+          </div>
+
+          <div class="panel mt">
+            <div class="panel-h"><h2>作业队列</h2><div class="spacer"></div><span class="hint" id="queue-note">—</span></div>
+            <div class="panel-b" style="max-height: 200px; overflow-y:auto" id="job-list"></div>
+          </div>
+        </div>
+
+        <!-- 右：结果 -->
+        <div id="bench-result">
+          <div class="panel">
+            <div class="panel-b" style="text-align:center; padding: 60px 24px; color: var(--dim)">
+              <div style="font-size: 15px; margin-bottom: 10px; color: var(--text-2)">尚未运行仿真</div>
+              <div style="font-size: 12px; line-height:2; max-width: 620px; margin: 0 auto; text-align:left">
+                <div style="display:flex;gap:10px;padding:5px 0"><span style="color:var(--accent);flex:none">1</span><span>左侧选择批次底座（86 批黄金集），必要时加载预设工况或手工覆盖参数</span></div>
+                <div style="display:flex;gap:10px;padding:5px 0"><span style="color:var(--accent);flex:none">2</span><span>点「运行仿真」提交作业 —— 单次约 20–80 秒，提交后进入队列可继续配下一个工况</span></div>
+                <div style="display:flex;gap:10px;padding:5px 0"><span style="color:var(--accent);flex:none">3</span><span>读全状态轨迹（40 通道 / 0.2h 原生分辨率）、产量指标、五通道健康分级与守恒审计</span></div>
+                <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line);color:var(--dim-2)">
+                  平台不预烘焙任何仿真结果：所有数字都来自服务端实时调用引擎。<br>
+                  上方「运算历史」保存你自己历次真实运算的结果（含执行时间），可随时点开回看，不必重算。
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 参数扫描 ===== -->
+    <section class="view" id="v-scan" hidden>
+      <div class="view-head">
+        <div>
+          <h1>参数扫描</h1>
+          <p>逐点跑引擎，画出参数与响应的关系。用于找可行域边界与响应曲线的形态（阈值型 vs 连续型）。</p>
+        </div>
+        <div class="spacer"></div>
+        <button class="btn primary" id="btn-scan">开始扫描</button>
+      </div>
+
+      <div class="grid" style="grid-template-columns: 300px minmax(0,1fr); align-items:start">
+        <div>
+          <div class="panel">
+            <div class="panel-h"><h2>扫描设置</h2></div>
+            <div class="panel-b">
+              <div class="tiny muted" style="margin-bottom:5px">批次</div>
+              <select class="inp" id="scan-batch"></select>
+
+              <div class="tiny muted" style="margin:12px 0 5px">响应量</div>
+              <select class="inp" id="scan-response"></select>
+              <div class="tiny muted" id="scan-resp-desc" style="margin-top:5px;line-height:1.6">—</div>
+
+              <div class="tiny muted" style="margin:12px 0 5px">扫描轴（最多 2 个）</div>
+              <div id="scan-axes"></div>
+
+              <button class="btn sm" id="btn-add-axis" style="margin-top:8px; width:100%">+ 添加轴</button>
+
+              <div class="note" style="margin-top:13px">
+                每个扫描点是一次完整仿真（约 20–80 秒）。点数上限：一维 24 / 二维 16。<br>
+                <b>失败的点会被显式标出</b>，不参与统计，也不会被渲染成 0 值。
+              </div>
+            </div>
+          </div>
+
+          <div class="panel mt">
+            <div class="panel-h"><h2>扫描解决什么问题</h2></div>
+            <div class="panel-b">
+              <div class="tiny" style="line-height:1.85;color:var(--dim)">
+                <b style="color:var(--text-2)">① 敏感性排序</b> —— 响应平坦的参数不值得调，陡峭的才是工艺杠杆。<br>
+                <b style="color:var(--text-2)">② 可行域边界</b> —— 曲线是「平滑过渡」还是「悬崖跳变」决定工艺容差。本项目实测：Fs 可行域 &lt; ±1%（R155）、γ1 在 0.985 处悬崖（R149）—— 这类结论只能扫出来。<br>
+                <b style="color:var(--text-2)">③ 参数耦合</b> —— 二维网格看交互：各自一维平坦、组合后崩 ⇒ 存在耦合。<br>
+                <b style="color:var(--text-2)">④ 失败点即边界</b> —— 引擎发散 / 越域的点被显式标出，失败带本身就是可行域边界的证据。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel" id="scan-status-panel">
+            <div class="panel-h"><h2>扫描进度</h2><div class="spacer"></div><span class="tag mute" id="scan-state">待运行</span></div>
+            <div class="panel-b">
+              <div class="prog"><i id="scan-prog"></i></div>
+              <div class="tiny muted" style="margin-top:7px" id="scan-detail">—</div>
+            </div>
+          </div>
+
+          <div class="panel mt" id="scan-result-panel" hidden>
+            <div class="panel-h">
+              <h2 id="scan-chart-title">响应</h2>
+              <div class="spacer"></div>
+              <div id="scan-summary">—</div>
+              <button class="btn sm" id="btn-scan-csv" style="margin-left:9px" title="导出逐点数据（含产量误差 / CO2d / pH / 健康分级）">导出 CSV</button>
+            </div>
+            <div class="panel-b"><div id="scan-chart"></div></div>
+          </div>
+
+          <div class="panel mt" id="scan-table-panel" hidden>
+            <div class="panel-h"><h2>逐点明细</h2><div class="spacer"></div><span class="hint">失败点显式标注，不参与统计</span></div>
+            <div style="max-height: 320px; overflow:auto"><table class="tbl" id="scan-table"></table></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 工况库 ===== -->
+    <section class="view" id="v-presets" hidden>
+      <div class="view-head">
+        <div>
+          <h1>工况库</h1>
+          <p>把常用工况固化成可复用的预设。每条注明它来自哪一轮研发结论，避免"凭感觉调参"。</p>
+        </div>
+      </div>
+      <div class="grid g-2" id="preset-grid"></div>
+    </section>
+
+    <!-- ===== 算子与求解器 ===== -->
+    <section class="view" id="v-operators" hidden>
+      <div class="view-head">
+        <div>
+          <h1>算子与求解器</h1>
+          <p>平台 v2 直接调用的引擎能力分层：仿真引擎 / 验收算子 / 软测量求解器 / 寻优求解器。</p>
+        </div>
+        <div class="spacer"></div>
+        <span class="tag" id="op-count">—</span>
+      </div>
+      <div id="op-layers"></div>
+    </section>
+
+    <!-- ===== 引擎状态 ===== -->
+    <section class="view" id="v-engine" hidden>
+      <div class="view-head">
+        <div>
+          <h1>引擎状态</h1>
+          <p>运行时装载核验：能力必须在进程内可调用，"文件存在"不算已装载。</p>
+        </div>
+        <div class="spacer"></div>
+        <button class="btn sm" id="btn-refresh-engine">重新核验</button>
+      </div>
+      <div class="grid g-4" id="eng-kpi"></div>
+      <div class="panel mt">
+        <div class="panel-h"><h2>平台与引擎契约</h2></div>
+        <div class="panel-b"><div class="grid g-3" id="eng-contract"></div></div>
+      </div>
+      <div class="panel mt">
+        <div class="panel-h"><h2>加载明细</h2></div>
+        <div style="max-height: 400px; overflow:auto"><table class="tbl" id="eng-table"></table></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============ 状态栏 ============ -->
+  <footer class="status">
+    <span class="dot" id="st-dot"></span>
+    <span id="st-engine">connecting…</span>
+    <span id="st-queue"></span>
+    <span class="spacer"></span>
+    <span id="st-build">—</span>
+  </footer>
+</div>
+
+<!-- ============ 抽屉 ============ -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-hidden="true">
+  <div class="drawer-h">
+    <h3 id="drawer-title">详情</h3>
+    <div class="spacer"></div>
+    <button class="icon-btn" id="drawer-close" aria-label="关闭">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 6l12 12M18 6L6 18"/>
+      </svg>
+    </button>
+  </div>
+  <div class="drawer-b" id="drawer-body"></div>
+</aside>
+
+<div class="tip" id="tip"></div>
+
+<script src="app_v2.js"></script>
+</body>
+</html>
