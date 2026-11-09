@@ -32,3 +32,6 @@ Thumbs.db
 
 # ---- 内部文档 ----
 docs/README.internal.md
+
+# ---- 信息图中间产物 ----
+docs/blog/assets/_*
